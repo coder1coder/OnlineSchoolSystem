@@ -7,8 +7,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "OnlineSchoolSystem.Client",
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "OnlineSchoolSystem.YoutubeBot", "OnlineSchoolSystem.YoutubeBot\OnlineSchoolSystem.YoutubeBot.csproj", "{E0AD2944-33E5-4CA2-81E0-4FAE61E694CE}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "OnlineSchoolSystem.DataAccess.File", "OnlineSchoolSystem.DataAccess.File\OnlineSchoolSystem.DataAccess.File.csproj", "{3987A169-C5ED-4787-95A3-BC13790D82AA}"
-EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "OnlineSchoolSystem.DataAccess.FileStorage", "OnlineSchoolSystem.DataAccess.File\OnlineSchoolSystem.DataAccess.FileStorage.csproj", "{3987A169-C5ED-4787-95A3-BC13790D82AA}"
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "OnlineSchoolSystem.Models", "OnlineSchoolSystem.Models\OnlineSchoolSystem.Models.csproj", "{5AF7AE02-5A13-4C83-AEB7-D9F84DC843A7}"
 EndProject
 Global
