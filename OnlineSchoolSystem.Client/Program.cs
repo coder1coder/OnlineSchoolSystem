@@ -101,7 +101,13 @@ namespace OnlineSchoolSystem.Client
                 codeChallenge,
                 codeChallengeMethod);
 
-            Process.Start(authorizationRequest);
+            var targetURL = authorizationRequest;
+            var psi = new ProcessStartInfo
+            {
+                FileName = targetURL,
+                UseShellExecute = true
+            };
+            Process.Start(psi);
 
             var context = await http.GetContextAsync();
 
