@@ -4,7 +4,7 @@ using System.Net.Sockets;
 using System.Security.Cryptography;
 using System.Text;
 
-namespace OnlineSchoolSystem.YoutubeBot
+namespace OnlineSchoolSystem.Utilites
 {
     public static class Helper
     {
