@@ -9,10 +9,10 @@ namespace OnlineSchoolSystem.DataAccess.FileStorage
 {
     public class JsonFileAccess
     {
-        private readonly string fileName;
+        private readonly string _fileName;
         public JsonFileAccess(string fileName)
         {
-            this.fileName = fileName;
+            this._fileName = fileName;
         }
 
         // записываем сообщения в файлы
@@ -20,7 +20,7 @@ namespace OnlineSchoolSystem.DataAccess.FileStorage
         {
             string jsonString = JsonConvert.SerializeObject(chatMessages, Formatting.Indented);
 
-            File.WriteAllText(fileName, jsonString);
+            File.WriteAllText(_fileName, jsonString);
         }
 
         // Записать в файл сообщение
@@ -44,25 +44,34 @@ namespace OnlineSchoolSystem.DataAccess.FileStorage
         }
 
         // Удалить сообщение
-        public void DeleteMessage(Message chatMessages)
+        public void DeleteMessage(Message chatMessage)
         {
-            // найти и удалить по совпадению чего?
-            throw new NotImplementedException();
+            var storedChatMessages = ReadAllMessagesFromFile();
+            storedChatMessages.Remove(chatMessage);
+            storedChatMessages = GetUniqueValues(storedChatMessages);
+
+            WriteMessagesToFile(storedChatMessages);
         }
 
         // Удалить сообщения
         public void DeleteMessages(List<Message> chatMessages)
         {
-            // найти и удалить по совпадению чего?
-            throw new NotImplementedException();
+            var storedChatMessages = ReadAllMessagesFromFile();
+            foreach (var item in chatMessages)
+            {
+                storedChatMessages.Remove(item);
+            }
+            storedChatMessages = GetUniqueValues(storedChatMessages);
+
+            WriteMessagesToFile(storedChatMessages);
         }
 
         // Прочитать из файла
         public List<Message> ReadAllMessagesFromFile()
         {
-            if (File.Exists(fileName))
+            if (File.Exists(_fileName))
             {
-                string json = File.ReadAllText(fileName);
+                string json = File.ReadAllText(_fileName);
                 var chatMessages = JsonConvert.DeserializeObject<List<Message>>(json);
                 if (chatMessages == null)
                     return new List<Message>();
