@@ -1,10 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Text;
-using System.Text.Json;
-using System.Text.Json.Serialization;
 using System.IO;
 using Newtonsoft.Json;
+using System.Linq;
 
 namespace OnlineSchoolSystem.DataAccess.FileStorage
 {
@@ -28,29 +26,32 @@ namespace OnlineSchoolSystem.DataAccess.FileStorage
         // Записать в файл сообщение
         public void AppendMessageToFile(StubChatMessageEntity chatMessage)
         {
-            var chatMessages = ReadAllMessagesFromFile();
-            chatMessages.Add(chatMessage);
+            var storedChatMessages = ReadAllMessagesFromFile();
+            storedChatMessages.Add(chatMessage);
+            storedChatMessages = GetUniqueValues(storedChatMessages);
 
-            WriteMessagesToFile(chatMessages);
+            WriteMessagesToFile(storedChatMessages);
         }
 
         // Записать в файл сообщения
-        public void AppendMessagesToFile(List<StubChatMessageEntity> messages)
+        public void AppendMessagesToFile(List<StubChatMessageEntity> chatMessages)
         {
             var storedChatMessages = ReadAllMessagesFromFile();
-            storedChatMessages.AddRange(messages);
+            storedChatMessages.AddRange(chatMessages);
+            storedChatMessages = GetUniqueValues(storedChatMessages);
+
             WriteMessagesToFile(storedChatMessages);
         }
 
         // Удалить сообщение
-        public void DeleteMessage(StubChatMessageEntity messages)
+        public void DeleteMessage(StubChatMessageEntity chatMessages)
         {
             // найти и удалить по совпадению чего?
             throw new NotImplementedException();
         }
 
         // Удалить сообщения
-        public void DeleteMessages(List<StubChatMessageEntity> messages)
+        public void DeleteMessages(List<StubChatMessageEntity> chatMessages)
         {
             // найти и удалить по совпадению чего?
             throw new NotImplementedException();
@@ -63,6 +64,8 @@ namespace OnlineSchoolSystem.DataAccess.FileStorage
             {
                 string json = File.ReadAllText(fileName);
                 var chatMessages = JsonConvert.DeserializeObject<List<StubChatMessageEntity>>(json);
+                if (chatMessages == null)
+                    return new List<StubChatMessageEntity>();
                 return chatMessages;
             }
             else
@@ -70,5 +73,15 @@ namespace OnlineSchoolSystem.DataAccess.FileStorage
                 return new List<StubChatMessageEntity>();
             }
         }
+
+        public List<StubChatMessageEntity> GetUniqueValues(List<StubChatMessageEntity> chatMessages)
+        {
+            //для сравнения по определённым полям реализовать IEquatable<StubChatMessageEntity> для StubChatMessageEntity
+            //https://docs.microsoft.com/ru-ru/dotnet/api/system.linq.enumerable.distinct?view=net-5.0
+            var result = chatMessages.Distinct().ToList();
+            return result;
+        }
     }
+
+   
 }
