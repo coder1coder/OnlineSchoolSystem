@@ -1,4 +1,5 @@
 ﻿using Newtonsoft.Json;
+using OnlineSchoolSystem.Utilites;
 using OnlineSchoolSystem.YoutubeBot;
 using System;
 using System.Collections.Generic;
@@ -12,7 +13,7 @@ using System.Security.Cryptography;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace OnlineSchoolSystem.ClientWindows
+namespace OnlineSchoolSystem.Client
 {
     class Program
     {
@@ -30,7 +31,7 @@ namespace OnlineSchoolSystem.ClientWindows
             string clientSecret = args[1];
 
             Console.WriteLine("Добро пожаловать в чат-бот Youtube");
-            Console.WriteLine("----------------------------------"); 
+            Console.WriteLine("----------------------------------");
             Console.WriteLine("Для начала работы бота необходимо пройти этап авторизаци");
             Console.WriteLine("Нажмите любую клавишу, чтобы начать..");
             Console.ReadKey();
@@ -63,7 +64,7 @@ namespace OnlineSchoolSystem.ClientWindows
                 }
             }
             else
-                Helper.Log("Нет существующих трансляций", Helper.LogLevel.Error);            
+                Helper.Log("Нет существующих трансляций", Helper.LogLevel.Error);
 
             Console.WriteLine("Нажмите любую клавишу для выхода");
             Console.ReadKey();
@@ -136,7 +137,7 @@ namespace OnlineSchoolSystem.ClientWindows
                 Helper.Log($"Полученный ответ содержит неверное состояние ({incomingState})");
                 return;
             }
-            
+
             await ExchangeCodeForTokensAsync(code, codeVerifier, redirectUri, clientId, clientSecret);
         }
 
@@ -196,7 +197,7 @@ namespace OnlineSchoolSystem.ClientWindows
         /// Appends the given string to the on-screen log, and the debug console.
         /// </summary>
         /// <param name="output">String to be logged</param>
-        
+
         /// <summary>
         /// Returns URI-safe data with a given input length.
         /// </summary>
@@ -244,7 +245,7 @@ namespace OnlineSchoolSystem.ClientWindows
         // ref: http://stackoverflow.com/a/12066376
         [DllImport("kernel32.dll", ExactSpelling = true)]
         public static extern IntPtr GetConsoleWindow();
-        
+
         [DllImport("user32.dll")]
         [return: MarshalAs(UnmanagedType.Bool)]
         public static extern bool SetForegroundWindow(IntPtr hWnd);

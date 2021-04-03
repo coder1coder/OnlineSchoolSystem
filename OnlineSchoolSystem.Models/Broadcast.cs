@@ -1,4 +1,4 @@
-﻿namespace OnlineSchoolSystem.YoutubeBot
+﻿namespace OnlineSchoolSystem.Models
 {
     public class Broadcast
     {
