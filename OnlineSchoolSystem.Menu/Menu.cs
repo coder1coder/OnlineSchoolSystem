@@ -1,6 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Text;
+using OnlineSchoolSystem.DataAccess.FileStorage;
 
 namespace OnlineSchoolSystem.Menu
 {
@@ -51,17 +53,30 @@ namespace OnlineSchoolSystem.Menu
 
         private void GetStatistic()
         {
+            var fileName = GetFileName();
+            var fileAccess = new JsonFileAccess(fileName);
+            var messages = fileAccess.ReadAllMessagesFromFile();
+            
+        }
+
+        private string GetFileName()
+        {
+            throw new NotImplementedException();
+        }
+
+        private string GetCurrentFile()
+        {
             throw new NotImplementedException();
         }
 
         private void GetMessagesFromPreviousStream()
         {
-            ShowIdPreviousStream();
+            throw new NotImplementedException();
         }
 
         private void ConnectToStreame()
         {
-            var ClientId = GetAnswer("Введите ClientId: ");
+            var clientId = GetAnswer("Введите ClientId: ");
             var clientSecret = GetAnswer("Введите ClientSecret: ");
             Console.WriteLine("Подключились к стриму с ClientId и ClientSecret");
         }
