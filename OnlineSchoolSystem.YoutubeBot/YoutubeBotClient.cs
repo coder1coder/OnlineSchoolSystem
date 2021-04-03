@@ -1,15 +1,10 @@
 ﻿using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
+using OnlineSchoolSystem.Models;
 using System;
 using System.Collections.Generic;
-using System.Diagnostics;
-using System.IO;
-using System.Net;
+using System.Linq;
 using System.Net.Http;
-using System.Runtime.InteropServices;
-using System.Text;
-using System.Threading;
-using System.Threading.Tasks;
 
 namespace OnlineSchoolSystem.YoutubeBot
 {
@@ -56,16 +51,13 @@ namespace OnlineSchoolSystem.YoutubeBot
 
                 if (jobj.ContainsKey("items") && jobj["items"].Type == JTokenType.Array && jobj["items"].HasValues)
                 {
-                    foreach (var item in jobj["items"])
-                    {
-                        yield return new Message()
-                        {
-                            Id = item.Value<string>("id"),
-                            TextMessage = item["snippet"]["textMessageDetails"].Value<string>("messageText"),
-                        };
-                    }
-                }
-                    
+                    return
+                        JsonConvert.DeserializeObject<List<Message>>(jobj["items"].ToString())
+                        ??
+                        Enumerable.Empty<Message>();
+                } 
+                else return Enumerable.Empty<Message>();
+
             }
             else throw new Exception(response.ReasonPhrase);
         }
