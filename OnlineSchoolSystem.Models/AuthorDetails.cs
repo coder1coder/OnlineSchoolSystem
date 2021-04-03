@@ -3,7 +3,10 @@ using System.Collections.Generic;
 using System.Text;
 
 namespace OnlineSchoolSystem.Models
-{
+{/// <summary>
+/// Модель с деталями автора сообщения
+/// https://developers.google.com/youtube/v3/live/docs/liveChatMessages#snippet.type
+/// </summary>
     public class AuthorDetails
     {
         public string ChannelId { get; set; }
