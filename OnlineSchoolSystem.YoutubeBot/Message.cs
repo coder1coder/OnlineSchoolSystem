@@ -1,6 +1,6 @@
 ﻿namespace OnlineSchoolSystem.YoutubeBot
 {
-    public class Message: IMessage
+    public class Message
     {
         public string Id { get; set; }
         public string TextMessage { get; set; }

@@ -3,11 +3,11 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 16
 VisualStudioVersion = 16.0.31019.35
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "OnlineSchoolSystem.Client", "OnlineSchoolSystem.Client\OnlineSchoolSystem.Client.csproj", "{D5DFB497-239D-4506-B6D0-E07F967A9A0E}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "OnlineSchoolSystem.DataAccess.File", "OnlineSchoolSystem.DataAccess.File\OnlineSchoolSystem.DataAccess.File.csproj", "{3987A169-C5ED-4787-95A3-BC13790D82AA}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "OnlineSchoolSystem.YoutubeBot", "OnlineSchoolSystem.YoutubeBot\OnlineSchoolSystem.YoutubeBot.csproj", "{E0AD2944-33E5-4CA2-81E0-4FAE61E694CE}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "OnlineSchoolSystem.ClientWindows", "OnlineSchoolSystem.ClientWindows\OnlineSchoolSystem.ClientWindows.csproj", "{CDD0D2B5-70EF-41F6-8AB0-6C830A5DC238}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "OnlineSchoolSystem.DataAccess.File", "OnlineSchoolSystem.DataAccess.File\OnlineSchoolSystem.DataAccess.File.csproj", "{3987A169-C5ED-4787-95A3-BC13790D82AA}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "OnlineSchoolSystem.YoutubeBot", "OnlineSchoolSystem.YoutubeBot\OnlineSchoolSystem.YoutubeBot.csproj", "{13DC6618-0E61-4F7B-8B77-682E710C9D65}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -15,18 +15,18 @@ Global
 		Release|Any CPU = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
-		{D5DFB497-239D-4506-B6D0-E07F967A9A0E}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{D5DFB497-239D-4506-B6D0-E07F967A9A0E}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{D5DFB497-239D-4506-B6D0-E07F967A9A0E}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{D5DFB497-239D-4506-B6D0-E07F967A9A0E}.Release|Any CPU.Build.0 = Release|Any CPU
-		{E0AD2944-33E5-4CA2-81E0-4FAE61E694CE}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{E0AD2944-33E5-4CA2-81E0-4FAE61E694CE}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{E0AD2944-33E5-4CA2-81E0-4FAE61E694CE}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{E0AD2944-33E5-4CA2-81E0-4FAE61E694CE}.Release|Any CPU.Build.0 = Release|Any CPU
 		{3987A169-C5ED-4787-95A3-BC13790D82AA}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{3987A169-C5ED-4787-95A3-BC13790D82AA}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{3987A169-C5ED-4787-95A3-BC13790D82AA}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{3987A169-C5ED-4787-95A3-BC13790D82AA}.Release|Any CPU.Build.0 = Release|Any CPU
+		{CDD0D2B5-70EF-41F6-8AB0-6C830A5DC238}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{CDD0D2B5-70EF-41F6-8AB0-6C830A5DC238}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{CDD0D2B5-70EF-41F6-8AB0-6C830A5DC238}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{CDD0D2B5-70EF-41F6-8AB0-6C830A5DC238}.Release|Any CPU.Build.0 = Release|Any CPU
+		{13DC6618-0E61-4F7B-8B77-682E710C9D65}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{13DC6618-0E61-4F7B-8B77-682E710C9D65}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{13DC6618-0E61-4F7B-8B77-682E710C9D65}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{13DC6618-0E61-4F7B-8B77-682E710C9D65}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
