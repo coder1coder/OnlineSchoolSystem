@@ -5,11 +5,13 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Net.Http;
+using System.Text;
 
 namespace OnlineSchoolSystem.YoutubeBot
 {
     public class YoutubeBotClient
     {
+        private const string _endpoint = "https://www.googleapis.com/youtube/v3/";
         private HttpClient _client;
 
         public string Token = string.Empty;
@@ -18,7 +20,11 @@ namespace OnlineSchoolSystem.YoutubeBot
         {
             Token = token;
 
-            _client = new HttpClient();
+            _client = new HttpClient
+            {
+                BaseAddress = new Uri(_endpoint)
+            };
+
             _client.DefaultRequestHeaders.Add("referer", "www.example.com:8000/*");
             _client.DefaultRequestHeaders.Add("accept", "applications/json");
         }
@@ -41,7 +47,7 @@ namespace OnlineSchoolSystem.YoutubeBot
 
             var parameters = encodedContent.ReadAsStringAsync().Result;
 
-            var response = _client.GetAsync("https://www.googleapis.com/youtube/v3/liveChat/messages?" + parameters).Result;
+            var response = _client.GetAsync("liveChat/messages?" + parameters).Result;
 
             if (response.IsSuccessStatusCode)
             {
@@ -80,7 +86,7 @@ namespace OnlineSchoolSystem.YoutubeBot
 
             var parameters = encodedContent.ReadAsStringAsync().Result;
 
-            var response = _client.GetAsync("https://www.googleapis.com/youtube/v3/liveBroadcasts?" + parameters).Result;
+            var response = _client.GetAsync("liveBroadcasts?" + parameters).Result;
 
             if (response.IsSuccessStatusCode)
             {
@@ -114,7 +120,7 @@ namespace OnlineSchoolSystem.YoutubeBot
 
             var parameters = encodedContent.ReadAsStringAsync().Result;
 
-            var response = _client.GetAsync("https://www.googleapis.com/youtube/v3/liveBroadcasts?" + parameters).Result;
+            var response = _client.GetAsync("liveBroadcasts?" + parameters).Result;
 
             if (response.IsSuccessStatusCode)
             {
@@ -132,10 +138,52 @@ namespace OnlineSchoolSystem.YoutubeBot
                             LiveChatId = item["snippet"].Value<string>("liveChatId"),
                         };
                 }
-                else
-                    throw new Exception("Bad response");
+                else throw new Exception("Bad response");
             }
             else throw new Exception(response.ReasonPhrase);
+        }
+
+        /// <summary>
+        /// Отправляет текстовое сообщение в указанный чат
+        /// </summary>
+        /// <param name="liveChatId">ID чата</param>
+        /// <param name="message">Максимальная длина сообщения огранчена в 200 символов, сообщения свыше обрезаются</param>
+        public bool SendTextMessage(string liveChatId, string message)
+        {
+            if (message.Length > 200)
+                message = message.Substring(0, 200);
+
+            var encodedContent = new FormUrlEncodedContent(
+                new Dictionary<string, string> {
+                { "part", "snippet" },
+                { "alt", "json" }
+            });
+
+            if (!_client.DefaultRequestHeaders.Contains("Authorization"))
+                _client.DefaultRequestHeaders.Add("Authorization", string.Format("Bearer {0}", Token));
+
+            var parameters = encodedContent.ReadAsStringAsync().Result;
+
+            var sendMessageobject = new
+            {
+                snippet = new
+                {
+                    liveChatId,
+                    type = "textMessageEvent",
+                    textMessageDetails = new
+                    {
+                        messageText = message
+                    }
+                }
+            };
+
+            var sendMessageString = JsonConvert.SerializeObject(sendMessageobject);
+
+            var body = new StringContent(sendMessageString, Encoding.UTF8);
+
+            var response = _client.PostAsync("liveChat/messages?" + parameters, body).Result;
+
+            return response.IsSuccessStatusCode;
         }
     }
 }
