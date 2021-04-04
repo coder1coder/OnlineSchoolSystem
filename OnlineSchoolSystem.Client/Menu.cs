@@ -1,14 +1,9 @@
-﻿using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Text;
-using OnlineSchoolSystem.DataAccess.FileStorage;
-using OnlineSchoolSystem.Models;
-using OnlineSchoolSystem.Utilites;
+﻿using OnlineSchoolSystem.Utilites;
+using System;
 
-namespace OnlineSchoolSystem.Menu
+namespace OnlineSchoolSystem.Client
 {
-    public class MenuController
+    public class Menu
     {
         public bool IsContinue { get; set; } = true;
 

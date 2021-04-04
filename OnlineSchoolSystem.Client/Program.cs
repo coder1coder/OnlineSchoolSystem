@@ -1,12 +1,10 @@
 ﻿using Newtonsoft.Json;
 using OnlineSchoolSystem.DataAccess.FileStorage;
-using OnlineSchoolSystem.Menu;
 using OnlineSchoolSystem.Models;
 using OnlineSchoolSystem.Utilites;
 using OnlineSchoolSystem.YoutubeBot;
 using System;
 using System.Collections.Generic;
-using System.Configuration;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
@@ -28,7 +26,7 @@ namespace OnlineSchoolSystem.Client
         {
             _settings = new JsonSettings(Environment.CurrentDirectory + "/settings.json");
 
-            var menu = new MenuController();
+            var menu = new Menu();
             
             do
             {

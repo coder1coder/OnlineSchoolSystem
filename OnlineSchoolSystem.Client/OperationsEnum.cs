@@ -1,4 +1,4 @@
-﻿namespace OnlineSchoolSystem.Menu
+﻿namespace OnlineSchoolSystem.Client
 {
     public enum OperationsEnum
     {
