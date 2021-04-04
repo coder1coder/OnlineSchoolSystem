@@ -39,7 +39,7 @@ namespace OnlineSchoolSystem.YoutubeBot
             var encodedContent = new FormUrlEncodedContent(
                 new Dictionary<string, string> {
                 { "liveChatId", liveChatId },
-                { "part", "snippet" },
+                { "part", "id,snippet,authorDetails" },
             });
 
             if (!_client.DefaultRequestHeaders.Contains("Authorization"))
