@@ -30,10 +30,10 @@ namespace OnlineSchoolSystem.Client
             string clientId = args[0];
             string clientSecret = args[1];
 
-            Console.WriteLine("Добро пожаловать в чат-бот Youtube");
-            Console.WriteLine("----------------------------------");
-            Console.WriteLine("Для начала работы бота необходимо пройти этап авторизаци");
-            Console.WriteLine("Нажмите любую клавишу, чтобы начать..");
+            Helper.Log("Добро пожаловать в чат-бот Youtube");
+            Helper.Log("----------------------------------");
+            Helper.Log("Для начала работы бота необходимо пройти этап авторизаци");
+            Helper.Log("Нажмите любую клавишу, чтобы начать..");
             Console.ReadKey();
 
             Helper.Log("Авторизация", Helper.LogLevel.Info);
@@ -62,11 +62,16 @@ namespace OnlineSchoolSystem.Client
                 {
                     Helper.Log(item.ToString(), Helper.LogLevel.Success);
                 }
+
+                if (!bot.SendTextMessage(liveChatId, "messages count: "+messages.Count))
+                {
+                    Helper.Log("Отправка сообщения не удалась", Helper.LogLevel.Error);
+                }
             }
             else
                 Helper.Log("Нет существующих трансляций", Helper.LogLevel.Error);
 
-            Console.WriteLine("Нажмите любую клавишу для выхода");
+            Helper.Log("Нажмите любую клавишу для выхода");
             Console.ReadKey();
             return 0;
         }
@@ -93,8 +98,17 @@ namespace OnlineSchoolSystem.Client
             http.Prefixes.Add(redirectUri);
             http.Start();
 
-            string authorizationRequest = string.Format("{0}?response_type=code&scope=https://www.googleapis.com/auth/youtube.readonly&redirect_uri={1}&client_id={2}&state={3}&code_challenge={4}&code_challenge_method={5}",
+            string[] scopes =
+            {
+                "https://www.googleapis.com/auth/youtube.readonly",
+                "https://www.googleapis.com/auth/youtube.force-ssl"
+            };
+
+            var scopesString = string.Join(' ', scopes);
+
+            string authorizationRequest = string.Format("{0}?response_type=code&scope={1}&redirect_uri={2}&client_id={3}&state={4}&code_challenge={5}&code_challenge_method={6}",
                 AuthorizationEndpoint,
+                scopesString,
                 Uri.EscapeDataString(redirectUri),
                 clientId,
                 state,
