@@ -8,10 +8,10 @@ namespace OnlineSchoolSystem.Models
 /// </summary>
     public class StatisticPerStream
     {
-        public AuthorDetails AuthorDetails { get; set; }
+        public string LiveChatId { get; set; }
+        public List<AuthorDetails> Authors { get; set; }
         public List<IAnswer> Answers { get; set; }
-        public List<IQuestion> Questions { get; set; }
-        public string LiveChatId { get; set; } //идентификатор стрима
+        public List<IQuestion> Questions { get; set; }        
 
     }
 }

@@ -3,6 +3,8 @@ using System.Collections.Generic;
 using System.IO;
 using System.Text;
 using OnlineSchoolSystem.DataAccess.FileStorage;
+using OnlineSchoolSystem.Models;
+using OnlineSchoolSystem.Utilites;
 
 namespace OnlineSchoolSystem.Menu
 {
@@ -13,35 +15,35 @@ namespace OnlineSchoolSystem.Menu
             var isContinue = true;
             do
             {
-                Console.WriteLine("Добро пожаловать в приложение!");
-                Console.WriteLine("1) Подключиться к стриму");
-                Console.WriteLine("2) Посмотреть лог сообщений с предыдущих стримов");
-                Console.WriteLine("3) Сформировать статистику");
-                Console.WriteLine("0) Выход");
-                Console.Write("Введите номер операции, которую хотите совершить: ");
+                Helper.Log("Добро пожаловать в приложение!");
+                Helper.Log("1) Подключиться к стриму");
+                Helper.Log("2) Посмотреть лог сообщений с предыдущих стримов");
+                Helper.Log("3) Сформировать статистику");
+                Helper.Log("0) Выход");
+                Helper.Log("Введите номер операции, которую хотите совершить: ");
 
                 string operation = Console.ReadLine();
                 switch (operation)
                 {
-                    case "1":
+                    case Operations.CONNECT_TO_STREAM:
                         {
-                            ConnectToStreame();
+                            ConnectToStream();
                             break;
                         }
-                    case "2":
+                    case Operations.GET_MESSAGES_FROM_PREVIOUS_STREAMS:
                         {
-                            GetMessagesFromPreviousStream();
+                            GetMessagesFromPreviousStreams();
                             break;
                         }
-                    case "3":
+                    case Operations.GET_STATISTIC:
                         {
                             GetStatistic();
                             break;
                         }
-                    case "0":
+                    case Operations.EXIT:
                         {
                             isContinue = false;
-                            Console.WriteLine("Выход");
+                            Helper.Log("Выход");
                             break;
                         }
                     default:
@@ -53,13 +55,43 @@ namespace OnlineSchoolSystem.Menu
 
         private void GetStatistic()
         {
-            var fileName = GetFileName();
-            var fileAccess = new JsonFileAccess(fileName);
-            var messages = fileAccess.ReadAllMessagesFromFile();
-            
+            //будет формироваться список авторов с количеством вопросов и ответов для одного стрима             GetReport();
+            //будет формироваться список вопросов и ответов для определенного автора по одному стриму. GetAuthorReport(AuthorDetails author) .
+            GetUserAnswer("Введите ид стрима для получения статистики");
+            var idStream = Console.ReadLine();
+            var report = new StatisticPerStream();
+            report.LiveChatId = idStream;
+            report.Answers = GetAnsweers(idStream);
+            report.Authors = GetAuthors(idStream);
+            report.Questions = GetQuestions(idStream);
         }
+        //перенести в клиента
+        //private List<IQuestion> GetQuestions(string idStream)
+        //{
+        //    throw new NotImplementedException();
+        //}
 
-        private string GetFileName()
+        //private List<AuthorDetails> GetAuthors(string idStream)
+        //{
+        //    throw new NotImplementedException();
+        //}
+        ///// <summary>
+        ///// Получает список ответов со стрима с идентификатором idStream
+        ///// </summary>
+        ///// <param name="idStream"></param>
+        ///// <returns></returns>
+        //private List<IAnswer> GetAnsweers(string idStream)
+        //{
+        //    var answers = new List<IAnswer>();
+        //    return answers;
+        //}
+
+        /// <summary>
+        /// Получение имени файла по идентификатору стрима
+        /// </summary>
+        /// <param name="idStream"></param>
+        /// <returns></returns>
+        private string GetFileName(string idStream)
         {
             throw new NotImplementedException();
         }
@@ -69,23 +101,43 @@ namespace OnlineSchoolSystem.Menu
             throw new NotImplementedException();
         }
 
-        private void GetMessagesFromPreviousStream()
+        private void GetMessagesFromPreviousStreams()
         {
-            throw new NotImplementedException();
+            string dirname = ""; // получить путь на каталог с файлами по стримам 
+            string[] files = Directory.GetFiles(dirname);
+            var messages = new List<Message>();
+            foreach (var file in files)
+            {
+                var fileAccess = new JsonFileAccess(file);
+                messages.AddRange(fileAccess.ReadAllMessagesFromFile());
+            }
+            // треубется реализовать получение из списка сообщений только те сообщения, у которых  message type is textMessageEvent.(Linq выражением)
+            foreach (var message in messages)
+            {
+                Helper.Log(message.AuthorDetails.DisplayName + "  " + message.Snippet.DisplayMessage);
+            }
         }
+        /// <summary>
+        /// Подключение к стриму. Добавить метод подключения с полученными параметрами
+        /// </summary>
+        private void ConnectToStream()
+        {
+            var clientId = GetUserAnswer("Введите ClientId: ");
+            var clientSecret = GetUserAnswer("Введите ClientSecret: ");
+            Helper.Log("Подключились к стриму с ClientId и ClientSecret");
 
-        private void ConnectToStreame()
-        {
-            var clientId = GetAnswer("Введите ClientId: ");
-            var clientSecret = GetAnswer("Введите ClientSecret: ");
-            Console.WriteLine("Подключились к стриму с ClientId и ClientSecret");
         }
-        private string GetAnswer(string question)
+        /// <summary>
+        /// Получает от пользователя ответ на вопрос question
+        /// </summary>
+        /// <param name="question"></param>
+        /// <returns></returns>
+        private string GetUserAnswer(string question)
         {
             string answer = null;
             while (answer == null)
             {
-                Console.Write(question);
+                Helper.Log(question);
                 answer = Console.ReadLine();
             }
             return answer;
