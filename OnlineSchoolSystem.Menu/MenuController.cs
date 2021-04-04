@@ -8,7 +8,7 @@ using OnlineSchoolSystem.Utilites;
 
 namespace OnlineSchoolSystem.Menu
 {
-    internal class Menu
+    internal class MenuController
     {
         public void Start()
         {
@@ -47,6 +47,7 @@ namespace OnlineSchoolSystem.Menu
                             break;
                         }
                     default:
+                        Helper.Log("Некорректная операция", Helper.LogLevel.Error);
                         break;
                 }
 

@@ -6,7 +6,7 @@ namespace OnlineSchoolSystem.Menu
     {
         static void Main(string[] args)
         {
-            Menu menu = new OnlineSchoolSystem.Menu();
+            MenuController menu = new OnlineSchoolSystem.Menu();
             menu.Start();
         }
     }
