@@ -1,6 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Text;
 
 namespace OnlineSchoolSystem.Models
 {/// <summary>
@@ -23,6 +21,11 @@ namespace OnlineSchoolSystem.Models
         public override int GetHashCode()
         {
             return Id.GetHashCode(); 
+        }
+
+        public override string ToString()
+        {
+            return $"Id: {Id}, Message: {Snippet?.TextMessageDetails?.MessageText}";
         }
 
     }
