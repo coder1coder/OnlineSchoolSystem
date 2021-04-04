@@ -139,7 +139,7 @@ namespace OnlineSchoolSystem.Client
                 File.Create(filePath);
             }
 
-            var jsonFile = new JsonFileAccess(idStream);
+            var jsonFile = new JsonFileAccess(filePath);
             jsonFile.AppendMessagesToFile(messages);
         }
 
