@@ -103,7 +103,7 @@ namespace OnlineSchoolSystem.YoutubeBot
         }
 
         /// <summary>
-        /// Получение всех трансляций
+        /// Получение всех активных трансляций
         /// </summary>
         /// <param name="broadcastId"></param>
         /// <returns></returns>
@@ -111,8 +111,8 @@ namespace OnlineSchoolSystem.YoutubeBot
         {
             var encodedContent = new FormUrlEncodedContent(
                 new Dictionary<string, string> {
-                    { "part", "id,snippet" },
-                    { "mine", "true" },
+                    { "part", "id,snippet" }, 
+                    { "broadcastStatus", "active" },
             });
 
             if (!_client.DefaultRequestHeaders.Contains("Authorization"))
