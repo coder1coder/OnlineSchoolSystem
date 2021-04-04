@@ -24,7 +24,7 @@ namespace OnlineSchoolSystem.Client
         const string AuthorizationEndpoint = "https://accounts.google.com/o/oauth2/v2/auth";
         private static string _token;
 
-        private static string _storageDirectoryName = "Storage";
+        private static readonly string _storageDirectoryName = "Storage";
 
         static async Task<int> Main(string[] args)
         {
@@ -47,7 +47,7 @@ namespace OnlineSchoolSystem.Client
 
                         await DoOAuthAsync(clientId, clientSecret);
                         
-                        StartBot(clientId, clientSecret);
+                        StartBot();
 
                         break;
 
@@ -81,7 +81,12 @@ namespace OnlineSchoolSystem.Client
             return 0;
         }
 
-        private static void StartBot(string clientId, string clientSecret)
+        /// <summary>
+        /// Запускает обработку сообщений ботом
+        /// </summary>
+        /// <param name="clientId"></param>
+        /// <param name="clientSecret"></param>
+        private static void StartBot()
         {
             do
             {
@@ -95,7 +100,7 @@ namespace OnlineSchoolSystem.Client
                     return;
                 }
 
-                Helper.Log("\nНачинаем работу", Helper.LogLevel.Success);
+                Helper.Log("Начинаем работу", Helper.LogLevel.Success);
 
                 var bot = new YoutubeBotClient(_token);
 
@@ -129,6 +134,11 @@ namespace OnlineSchoolSystem.Client
             while (Console.ReadKey().Key != ConsoleKey.Escape);
         }
 
+        /// <summary>
+        /// Сохраняет сообщения в хранилище
+        /// </summary>
+        /// <param name="idStream"></param>
+        /// <param name="messages"></param>
         private static void AddMessagesToFile(string idStream, List<Message> messages)
         {
             //проверка на наличие файла в папке, название файла переделать на дату стрима вметсо idStream
@@ -141,11 +151,6 @@ namespace OnlineSchoolSystem.Client
 
             var jsonFile = new JsonFileAccess(filePath);
             jsonFile.AppendMessagesToFile(messages);
-        }
-
-        private static void ShowStats()
-        {
-            Helper.Log("Show stats implementation");
         }
 
         /// <summary>
