@@ -2,7 +2,7 @@
 using OnlineSchoolSystem.DataAccess.FileStorage;
 using OnlineSchoolSystem.Models;
 using OnlineSchoolSystem.Utilites;
-using OnlineSchoolSystem.YoutubeBot;
+using OnlineSchoolSystem.Bots;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
@@ -15,6 +15,7 @@ using System.Security.Cryptography;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
+using OnlineSchoolSystem.Bots.Youtube.Models;
 
 namespace OnlineSchoolSystem.Client
 {
@@ -112,7 +113,7 @@ namespace OnlineSchoolSystem.Client
 
                 Helper.Log("Начинаем работу", Helper.LogLevel.Success);
 
-                var bot = new YoutubeBotClient(_settings.Get("Token"));
+                var bot = new YoutubeBot(_settings.Get("Token"));
 
                 var broadcasts = bot.GetBroadcasts().ToList();
 

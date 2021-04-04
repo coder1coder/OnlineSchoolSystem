@@ -1,10 +1,11 @@
 ﻿using System;
 
-namespace OnlineSchoolSystem.Models
-{/// <summary>
-/// Модель сообщения
-/// https://developers.google.com/youtube/v3/live/docs/liveChatMessages#snippet.type
-/// </summary>
+namespace OnlineSchoolSystem.Bots.Youtube.Models
+{
+    /// <summary>
+    /// Модель сообщения
+    /// https://developers.google.com/youtube/v3/live/docs/liveChatMessages#snippet.type
+    /// </summary>
     public class Message : IEquatable<Message>
     {
         public string Id { get; set; }
@@ -27,6 +28,5 @@ namespace OnlineSchoolSystem.Models
         {
             return $"Id: {Id}, Message: {Snippet?.TextMessageDetails?.MessageText}";
         }
-
     }
 }

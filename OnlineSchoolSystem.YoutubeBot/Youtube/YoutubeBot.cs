@@ -1,5 +1,7 @@
 ﻿using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
+using OnlineSchoolSystem.Bots.Models;
+using OnlineSchoolSystem.Bots.Youtube.Models;
 using OnlineSchoolSystem.Models;
 using System;
 using System.Collections.Generic;
@@ -7,16 +9,18 @@ using System.Linq;
 using System.Net.Http;
 using System.Text;
 
-namespace OnlineSchoolSystem.YoutubeBot
+namespace OnlineSchoolSystem.Bots
 {
-    public class YoutubeBotClient
+    public class YoutubeBot: IBot
     {
         private const string _endpoint = "https://www.googleapis.com/youtube/v3/";
-        private HttpClient _client;
+        private readonly HttpClient _client;
 
         public string Token = string.Empty;
 
-        public YoutubeBotClient(string token)
+        public BotState State { get; set; }
+
+        public YoutubeBot(string token)
         {
             Token = token;
 
@@ -184,6 +188,16 @@ namespace OnlineSchoolSystem.YoutubeBot
             var response = _client.PostAsync("liveChat/messages?" + parameters, body).Result;
 
             return response.IsSuccessStatusCode;
+        }
+
+        public void Start(IStorage storage)
+        {
+            throw new NotImplementedException();
+        }
+
+        public void Stop()
+        {
+            throw new NotImplementedException();
         }
     }
 }

@@ -1,9 +1,7 @@
-﻿using System;
+﻿using Newtonsoft.Json;
 using System.Collections.Generic;
 using System.IO;
-using Newtonsoft.Json;
 using System.Linq;
-using OnlineSchoolSystem.Models;
 
 namespace OnlineSchoolSystem.DataAccess.FileStorage
 {
