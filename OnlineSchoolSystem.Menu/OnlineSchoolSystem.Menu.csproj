@@ -5,4 +5,9 @@
     <TargetFramework>netcoreapp3.1</TargetFramework>
   </PropertyGroup>
 
+  <ItemGroup>
+    <ProjectReference Include="..\OnlineSchoolSystem.DataAccess.File\OnlineSchoolSystem.DataAccess.FileStorage.csproj" />
+    <ProjectReference Include="..\OnlineSchoolSystem.Utilites\OnlineSchoolSystem.Utilites.csproj" />
+  </ItemGroup>
+
 </Project>

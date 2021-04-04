@@ -10,7 +10,7 @@ namespace OnlineSchoolSystem.Models
     /// </summary>
     public class Snippet
     {
-        public enum Type
+        public enum SnippetType
         {
             chatEndedEvent,
             messageDeletedEvent,
@@ -22,6 +22,7 @@ namespace OnlineSchoolSystem.Models
             textMessageEvent,
             tombstone
         }
+        public SnippetType Type { get; set; }
         public string LiveChatId { get; set; }
         public string AuthorChannelId { get; set; }
         public DateTime PublishedAt { get; set; }
