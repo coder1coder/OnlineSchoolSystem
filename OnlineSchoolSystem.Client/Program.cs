@@ -24,12 +24,18 @@ namespace OnlineSchoolSystem.Client
         const string AuthorizationEndpoint = "https://accounts.google.com/o/oauth2/v2/auth";
         private static string _token;
 
+        private static string _storageDirectoryName = "Storage";
+
         static async Task<int> Main(string[] args)
         {
             var menu = new MenuController();
 
             do
             {
+                //Инициализация хранилища
+                if (!Environment.CurrentDirectory.Contains(_storageDirectoryName))
+                    Directory.CreateDirectory(_storageDirectoryName);
+
                 menu.PrintMenu();
                 var operation = menu.GetSelectedOperation();
 
@@ -79,6 +85,8 @@ namespace OnlineSchoolSystem.Client
         {
             do
             {
+                Console.Clear();
+
                 //Do check token's expire
 
                 if (string.IsNullOrWhiteSpace(_token))
@@ -99,11 +107,13 @@ namespace OnlineSchoolSystem.Client
 
                     var messages = bot.GetLiveChatMessages(liveChatId).ToList();
 
-                    foreach (var item in messages)
-                    {
-                        Helper.Log(item.ToString(), Helper.LogLevel.Success);
-                    }
+                    //save messages to storage
+                    AddMessagesToFile(broadcasts.First().Id, messages);
 
+                    foreach (var item in messages)
+                        Helper.Log(item.ToString(), Helper.LogLevel.Success);
+
+                    //send message if question registered
                     if (!bot.SendTextMessage(liveChatId, "messages count: " + messages.Count))
                     {
                         Helper.Log("Отправка сообщения не удалась", Helper.LogLevel.Error);
@@ -117,6 +127,20 @@ namespace OnlineSchoolSystem.Client
                 Helper.Log("Press any key to continue working and ESC to exit..");
             }
             while (Console.ReadKey().Key != ConsoleKey.Escape);
+        }
+
+        private static void AddMessagesToFile(string idStream, List<Message> messages)
+        {
+            //проверка на наличие файла в папке, название файла переделать на дату стрима вметсо idStream
+            string filePath = Path.Combine(Environment.CurrentDirectory, _storageDirectoryName, idStream + ".json");
+
+            if (!File.Exists(filePath))
+            {
+                File.Create(filePath);
+            }
+
+            var jsonFile = new JsonFileAccess(idStream);
+            jsonFile.AppendMessagesToFile(messages);
         }
 
         private static void ShowStats()
