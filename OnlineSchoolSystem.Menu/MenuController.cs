@@ -8,64 +8,41 @@ using OnlineSchoolSystem.Utilites;
 
 namespace OnlineSchoolSystem.Menu
 {
-    internal class MenuController
+    public class MenuController
     {
-        public void Start()
+        public bool IsContinue { get; set; } = true;
+
+        /// <summary>
+        /// Display menu items 
+        /// </summary>
+        public void PrintMenu()
         {
-            var isContinue = true;
+            Console.Clear();
+            Helper.Log("Добро пожаловать в приложение!");
+            Helper.Log("1) Подключиться к стриму");
+            Helper.Log("2) Посмотреть лог сообщений с предыдущих стримов");
+            Helper.Log("3) Сформировать статистику");
+            Helper.Log("0) Выход");
+        }
+
+        /// <summary>
+        /// Get user operation
+        /// </summary>
+        /// <returns></returns>
+        public OperationsEnum GetSelectedOperation()
+        {
+            int operation;
             do
             {
-                Helper.Log("Добро пожаловать в приложение!");
-                Helper.Log("1) Подключиться к стриму");
-                Helper.Log("2) Посмотреть лог сообщений с предыдущих стримов");
-                Helper.Log("3) Сформировать статистику");
-                Helper.Log("0) Выход");
-                Helper.Log("Введите номер операции, которую хотите совершить: ");
+                Console.Write("Введите номер операции, которую хотите совершить: ");
+            }
+            while (int.TryParse(Console.ReadLine(), out operation) == false);
+            
+            Console.WriteLine();
 
-                string operation = Console.ReadLine();
-                switch (operation)
-                {
-                    case Operations.CONNECT_TO_STREAM:
-                        {
-                            ConnectToStream();
-                            break;
-                        }
-                    case Operations.GET_MESSAGES_FROM_PREVIOUS_STREAMS:
-                        {
-                            GetMessagesFromPreviousStreams();
-                            break;
-                        }
-                    case Operations.GET_STATISTIC:
-                        {
-                            GetStatistic();
-                            break;
-                        }
-                    case Operations.EXIT:
-                        {
-                            isContinue = false;
-                            Helper.Log("Выход");
-                            break;
-                        }
-                    default:
-                        Helper.Log("Некорректная операция", Helper.LogLevel.Error);
-                        break;
-                }
-
-            } while (isContinue);
+            return (OperationsEnum)operation;
         }
 
-        private void GetStatistic()
-        {
-            //будет формироваться список авторов с количеством вопросов и ответов для одного стрима             GetReport();
-            //будет формироваться список вопросов и ответов для определенного автора по одному стриму. GetAuthorReport(AuthorDetails author) .
-            GetUserAnswer("Введите ид стрима для получения статистики");
-            var idStream = Console.ReadLine();
-            var report = new StatisticPerStream();
-            report.LiveChatId = idStream;
-            report.Answers = GetAnsweers(idStream);
-            report.Authors = GetAuthors(idStream);
-            report.Questions = GetQuestions(idStream);
-        }
         //перенести в клиента
         //private List<IQuestion> GetQuestions(string idStream)
         //{
@@ -102,38 +79,12 @@ namespace OnlineSchoolSystem.Menu
             throw new NotImplementedException();
         }
 
-        private void GetMessagesFromPreviousStreams()
-        {
-            string dirname = ""; // получить путь на каталог с файлами по стримам 
-            string[] files = Directory.GetFiles(dirname);
-            var messages = new List<Message>();
-            foreach (var file in files)
-            {
-                var fileAccess = new JsonFileAccess(file);
-                messages.AddRange(fileAccess.ReadAllMessagesFromFile());
-            }
-            // треубется реализовать получение из списка сообщений только те сообщения, у которых  message type is textMessageEvent.(Linq выражением)
-            foreach (var message in messages)
-            {
-                Helper.Log(message.AuthorDetails.DisplayName + "  " + message.Snippet.DisplayMessage);
-            }
-        }
-        /// <summary>
-        /// Подключение к стриму. Добавить метод подключения с полученными параметрами
-        /// </summary>
-        private void ConnectToStream()
-        {
-            var clientId = GetUserAnswer("Введите ClientId: ");
-            var clientSecret = GetUserAnswer("Введите ClientSecret: ");
-            Helper.Log("Подключились к стриму с ClientId и ClientSecret");
-
-        }
         /// <summary>
         /// Получает от пользователя ответ на вопрос question
         /// </summary>
         /// <param name="question"></param>
         /// <returns></returns>
-        private string GetUserAnswer(string question)
+        public string GetUserAnswer(string question)
         {
             string answer = null;
             while (answer == null)

@@ -1,4 +1,7 @@
 ﻿using Newtonsoft.Json;
+using OnlineSchoolSystem.DataAccess.FileStorage;
+using OnlineSchoolSystem.Menu;
+using OnlineSchoolSystem.Models;
 using OnlineSchoolSystem.Utilites;
 using OnlineSchoolSystem.YoutubeBot;
 using System;
@@ -11,6 +14,7 @@ using System.Net.Sockets;
 using System.Runtime.InteropServices;
 using System.Security.Cryptography;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 
 namespace OnlineSchoolSystem.Client
@@ -22,58 +26,150 @@ namespace OnlineSchoolSystem.Client
 
         static async Task<int> Main(string[] args)
         {
-            if (args.Length != 2)
+            var menu = new MenuController();
+
+            do
             {
-                Console.WriteLine("Required command line arguments: client-id client-secret");
-                return 1;
-            }
-            string clientId = args[0];
-            string clientSecret = args[1];
+                menu.PrintMenu();
+                var operation = menu.GetSelectedOperation();
 
-            Helper.Log("Добро пожаловать в чат-бот Youtube");
-            Helper.Log("----------------------------------");
-            Helper.Log("Для начала работы бота необходимо пройти этап авторизаци");
-            Helper.Log("Нажмите любую клавишу, чтобы начать..");
-            Console.ReadKey();
-
-            Helper.Log("Авторизация", Helper.LogLevel.Info);
-            Program p = new Program();
-            await p.DoOAuthAsync(clientId, clientSecret);
-
-            if (string.IsNullOrWhiteSpace(_token))
-            {
-                Helper.Log("Некорректный токен", Helper.LogLevel.Error);
-                return 0;
-            }
-
-            Helper.Log("Начинаем работу", Helper.LogLevel.Success);
-
-            var bot = new YoutubeBotClient(_token);
-
-            var broadcasts = bot.GetBroadcasts().ToList();
-
-            if (broadcasts.Count() > 0)
-            {
-                var liveChatId = bot.GetLiveChatIdByBroadcastId(broadcasts.First().Id);
-
-                var messages = bot.GetLiveChatMessages(liveChatId).ToList();
-
-                foreach (var item in messages)
+                switch (operation)
                 {
-                    Helper.Log(item.ToString(), Helper.LogLevel.Success);
+                    case OperationsEnum.CONNECT_TO_STREAM:
+                        var clientId = menu.GetUserAnswer("Введите ClientId: ");
+                        var clientSecret = menu.GetUserAnswer("Введите ClientSecret: ");
+
+                        await DoOAuthAsync(clientId, clientSecret);
+                        
+                        StartBot(clientId, clientSecret);
+
+                        break;
+
+                    case OperationsEnum.GET_MESSAGES_FROM_PREVIOUS_STREAMS:
+                        {
+                            GetMessagesFromPreviousStreams();
+                            break;
+                        }
+                    case OperationsEnum.GET_STATISTIC:
+                        {
+                            menu.GetUserAnswer("Введите ид стрима для получения статистики");
+                            var idStream = Console.ReadLine();
+                            GetStatistic(idStream);
+                            break;
+                        }
+                    case OperationsEnum.EXIT:
+                        {
+                            menu.IsContinue = false;
+                            Helper.Log("Нажмите любую клавишу для выхода");
+                            Console.ReadKey();
+                            return 0;
+                        }
+                    default:
+                        Helper.Log("Некорректная операция", Helper.LogLevel.Error);
+                        break;
                 }
 
-                if (!bot.SendTextMessage(liveChatId, "messages count: "+messages.Count))
-                {
-                    Helper.Log("Отправка сообщения не удалась", Helper.LogLevel.Error);
-                }
-            }
-            else
-                Helper.Log("Нет существующих трансляций", Helper.LogLevel.Error);
+            } while (menu.IsContinue);
 
-            Helper.Log("Нажмите любую клавишу для выхода");
-            Console.ReadKey();
+            //exit from app
             return 0;
+        }
+
+        private static void StartBot(string clientId, string clientSecret)
+        {
+            do
+            {
+                //Do check token's expire
+
+                if (string.IsNullOrWhiteSpace(_token))
+                {
+                    Helper.Log("Некорректный токен", Helper.LogLevel.Error);
+                    return;
+                }
+
+                Helper.Log("\nНачинаем работу", Helper.LogLevel.Success);
+
+                var bot = new YoutubeBotClient(_token);
+
+                var broadcasts = bot.GetBroadcasts().ToList();
+
+                if (broadcasts.Count > 0)
+                {
+                    var liveChatId = bot.GetLiveChatIdByBroadcastId(broadcasts.First().Id);
+
+                    var messages = bot.GetLiveChatMessages(liveChatId).ToList();
+
+                    foreach (var item in messages)
+                    {
+                        Helper.Log(item.ToString(), Helper.LogLevel.Success);
+                    }
+
+                    if (!bot.SendTextMessage(liveChatId, "messages count: " + messages.Count))
+                    {
+                        Helper.Log("Отправка сообщения не удалась", Helper.LogLevel.Error);
+                    }
+                }
+                else Helper.Log("Нет существующих трансляций", Helper.LogLevel.Error);
+
+                Helper.Log("Я работу свою сделал. Пойду чай попью 5 сек..");
+                Thread.Sleep(5000);
+
+                Helper.Log("Press any key to continue working and ESC to exit..");
+            }
+            while (Console.ReadKey().Key != ConsoleKey.Escape);
+        }
+
+        private static void ShowStats()
+        {
+            Helper.Log("Show stats implementation");
+        }
+
+        /// <summary>
+        /// Получает статистику
+        /// </summary>
+        private static void GetStatistic(string idStream)
+        {
+            //будет формироваться список авторов с количеством вопросов и ответов для одного стрима             GetReport();
+            //будет формироваться список вопросов и ответов для определенного автора по одному стриму. GetAuthorReport(AuthorDetails author) .
+            var report = new StatisticPerStream
+            {
+                LiveChatId = idStream,
+                Answers = GetAnswers(idStream),
+                Authors = GetAuthors(idStream),
+                Questions = GetQuestions(idStream)
+            };
+        }
+
+        private static List<IAnswer> GetAnswers(string idStream)
+        {
+            throw new NotImplementedException();
+        }
+
+        private static List<AuthorDetails> GetAuthors(string idStream)
+        {
+            throw new NotImplementedException();
+        }
+
+        private static List<IQuestion> GetQuestions(string idStream)
+        {
+            throw new NotImplementedException();
+        }
+
+        private static void GetMessagesFromPreviousStreams()
+        {
+            string dirname = ""; // получить путь на каталог с файлами по стримам 
+            string[] files = Directory.GetFiles(dirname);
+            var messages = new List<Message>();
+            foreach (var file in files)
+            {
+                var fileAccess = new JsonFileAccess(file);
+                messages.AddRange(fileAccess.ReadAllMessagesFromFile());
+            }
+            // треубется реализовать получение из списка сообщений только те сообщения, у которых  message type is textMessageEvent.(Linq выражением)
+            foreach (var message in messages)
+            {
+                Helper.Log(message.AuthorDetails.DisplayName + "  " + message.Snippet.DisplayMessage);
+            }
         }
 
         // ref http://stackoverflow.com/a/3978040
@@ -85,7 +181,7 @@ namespace OnlineSchoolSystem.Client
             listener.Stop();
             return port;
         }
-        private async Task DoOAuthAsync(string clientId, string clientSecret)
+        private static async Task DoOAuthAsync(string clientId, string clientSecret)
         {
             string state = GenerateRandomDataBase64url(32);
             string codeVerifier = GenerateRandomDataBase64url(32);
@@ -161,7 +257,16 @@ namespace OnlineSchoolSystem.Client
             await ExchangeCodeForTokensAsync(code, codeVerifier, redirectUri, clientId, clientSecret);
         }
 
-        async Task ExchangeCodeForTokensAsync(string code, string codeVerifier, string redirectUri, string clientId, string clientSecret)
+        /// <summary>
+        /// Меняет полученный код при авторизации на токен
+        /// </summary>
+        /// <param name="code"></param>
+        /// <param name="codeVerifier"></param>
+        /// <param name="redirectUri"></param>
+        /// <param name="clientId"></param>
+        /// <param name="clientSecret"></param>
+        /// <returns></returns>
+        async static Task ExchangeCodeForTokensAsync(string code, string codeVerifier, string redirectUri, string clientId, string clientSecret)
         {
             var tokenRequestUri = "https://www.googleapis.com/oauth2/v4/token";
             var tokenRequestBody = string.Format("code={0}&redirect_uri={1}&client_id={2}&code_verifier={3}&client_secret={4}&scope=&grant_type=authorization_code",
@@ -270,7 +375,7 @@ namespace OnlineSchoolSystem.Client
         [return: MarshalAs(UnmanagedType.Bool)]
         public static extern bool SetForegroundWindow(IntPtr hWnd);
 
-        public void BringConsoleToFront()
+        public static void BringConsoleToFront()
         {
             SetForegroundWindow(GetConsoleWindow());
         }
