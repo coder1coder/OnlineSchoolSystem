@@ -6,6 +6,7 @@ using OnlineSchoolSystem.Utilites;
 using OnlineSchoolSystem.YoutubeBot;
 using System;
 using System.Collections.Generic;
+using System.Configuration;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
@@ -21,20 +22,19 @@ namespace OnlineSchoolSystem.Client
 {
     class Program
     {
-        const string AuthorizationEndpoint = "https://accounts.google.com/o/oauth2/v2/auth";
-        private static string _token;
-
-        private static readonly string _storageDirectoryName = "Storage";
+        private static JsonSettings _settings;
 
         static async Task<int> Main(string[] args)
         {
-            var menu = new MenuController();
+            _settings = new JsonSettings(Environment.CurrentDirectory + "/settings.json");
 
+            var menu = new MenuController();
+            
             do
             {
                 //Инициализация хранилища
-                if (!Environment.CurrentDirectory.Contains(_storageDirectoryName))
-                    Directory.CreateDirectory(_storageDirectoryName);
+                if (!Environment.CurrentDirectory.Contains(_settings.Get("storageDirectoryName")))
+                    Directory.CreateDirectory(_settings.Get("storageDirectoryName"));
 
                 menu.PrintMenu();
                 var operation = menu.GetSelectedOperation();
@@ -42,8 +42,20 @@ namespace OnlineSchoolSystem.Client
                 switch (operation)
                 {
                     case OperationsEnum.CONNECT_TO_STREAM:
-                        var clientId = menu.GetUserAnswer("Введите ClientId: ");
-                        var clientSecret = menu.GetUserAnswer("Введите ClientSecret: ");
+
+                        var clientId = _settings.Get("clientId");
+                        var clientSecret = _settings.Get("clientSecret");
+
+                        if (string.IsNullOrWhiteSpace(clientId) || string.IsNullOrWhiteSpace(clientSecret))
+                        {
+                            Helper.Log("Не найдены ключи доступа, установите их", Helper.LogLevel.Warning);
+                            Console.Write("clientId: ");
+                            _settings.Set("clientId", Console.ReadLine());
+
+                            Console.Write("clientSecret: ");
+                            _settings.Set("clientSecret", Console.ReadLine());
+                            break;
+                        }
 
                         await DoOAuthAsync(clientId, clientSecret);
                         
@@ -94,7 +106,7 @@ namespace OnlineSchoolSystem.Client
 
                 //Do check token's expire
 
-                if (string.IsNullOrWhiteSpace(_token))
+                if (string.IsNullOrWhiteSpace(_settings.Get("Token")))
                 {
                     Helper.Log("Некорректный токен", Helper.LogLevel.Error);
                     return;
@@ -102,7 +114,7 @@ namespace OnlineSchoolSystem.Client
 
                 Helper.Log("Начинаем работу", Helper.LogLevel.Success);
 
-                var bot = new YoutubeBotClient(_token);
+                var bot = new YoutubeBotClient(_settings.Get("Token"));
 
                 var broadcasts = bot.GetBroadcasts().ToList();
 
@@ -142,7 +154,7 @@ namespace OnlineSchoolSystem.Client
         private static void AddMessagesToFile(string idStream, List<Message> messages)
         {
             //проверка на наличие файла в папке, название файла переделать на дату стрима вметсо idStream
-            string filePath = Path.Combine(Environment.CurrentDirectory, _storageDirectoryName, idStream + ".json");
+            string filePath = Path.Combine(Environment.CurrentDirectory, _settings.Get("storageDirectoryName"), idStream + ".json");
 
             if (!File.Exists(filePath))
             {
@@ -231,8 +243,10 @@ namespace OnlineSchoolSystem.Client
 
             var scopesString = string.Join(' ', scopes);
 
+            var endpoint = _settings.Get("authorizationEndpoint");
+
             string authorizationRequest = string.Format("{0}?response_type=code&scope={1}&redirect_uri={2}&client_id={3}&state={4}&code_challenge={5}&code_challenge_method={6}",
-                AuthorizationEndpoint,
+                endpoint,
                 scopesString,
                 Uri.EscapeDataString(redirectUri),
                 clientId,
@@ -327,7 +341,7 @@ namespace OnlineSchoolSystem.Client
 
                     var tokenEndpointDecoded = JsonConvert.DeserializeObject<Dictionary<string, string>>(responseText);
 
-                    _token = tokenEndpointDecoded["access_token"];
+                    _settings.Set("Token", tokenEndpointDecoded["access_token"]);
                 }
             }
             catch (WebException ex)

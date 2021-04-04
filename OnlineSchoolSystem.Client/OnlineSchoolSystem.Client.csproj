@@ -1,4 +1,4 @@
-<Project Sdk="Microsoft.NET.Sdk">
+﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
     <OutputType>Exe</OutputType>
@@ -11,5 +11,7 @@
     <ProjectReference Include="..\OnlineSchoolSystem.Utilites\OnlineSchoolSystem.Utilites.csproj" />
     <ProjectReference Include="..\OnlineSchoolSystem.YoutubeBot\OnlineSchoolSystem.YoutubeBot.csproj" />
   </ItemGroup>
+  
+  
 
 </Project>
