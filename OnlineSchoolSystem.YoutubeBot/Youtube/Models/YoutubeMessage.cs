@@ -6,13 +6,13 @@ namespace OnlineSchoolSystem.Bots.Youtube.Models
     /// Модель сообщения
     /// https://developers.google.com/youtube/v3/live/docs/liveChatMessages#snippet.type
     /// </summary>
-    public class Message : IEquatable<Message>
+    public class YoutubeMessage : IEquatable<YoutubeMessage>
     {
         public string Id { get; set; }
         public Snippet Snippet { get; set; }
         public AuthorDetails AuthorDetails { get; set; }
 
-        public bool Equals(Message other)
+        public bool Equals(YoutubeMessage other)
         {
             if (Object.ReferenceEquals(other, null)) return false;
             if (Object.ReferenceEquals(this, other)) return true;
@@ -22,11 +22,6 @@ namespace OnlineSchoolSystem.Bots.Youtube.Models
         public override int GetHashCode()
         {
             return Id.GetHashCode(); 
-        }
-
-        public override string ToString()
-        {
-            return $"Id: {Id}, Message: {Snippet?.TextMessageDetails?.MessageText}";
         }
     }
 }

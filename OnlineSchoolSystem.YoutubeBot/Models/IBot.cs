@@ -1,4 +1,5 @@
 ﻿using OnlineSchoolSystem.Models;
+using System.Threading.Tasks;
 
 namespace OnlineSchoolSystem.Bots.Models
 {
@@ -6,7 +7,7 @@ namespace OnlineSchoolSystem.Bots.Models
     {
         BotState State { get; set; }
 
-        void Start(IStorage storage);
+        Task StartAsync(IStorage storage, ISettings settings);
         void Stop();
     }
 }

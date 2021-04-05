@@ -1,4 +1,17 @@
 {
-	"authorizationEndpoint": "https://accounts.google.com/o/oauth2/v2/auth",
-	"storageDirectoryName": "Storage",
+	"bots": {
+		"youtube": {
+			"endpoints": {
+				"auth": "https://accounts.google.com/o/oauth2/v2/auth",
+				"request": ""
+			},
+			"clientId": "",
+			"clientSecret": "",
+			"token": ""
+		}
+	},
+	"storages": {
+		"directoryPath": "Storage"
+	}
+		
 }

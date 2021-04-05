@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.IO;
 using OnlineSchoolSystem.Models;
 using System.Linq;
-using OnlineSchoolSystem.Bots.Youtube.Models;
 
 namespace OnlineSchoolSystem.DataAccess.FileStorage
 {
@@ -13,6 +12,11 @@ namespace OnlineSchoolSystem.DataAccess.FileStorage
         public JsonFileAccess(string fileName)
         {
             this._fileName = fileName;
+        }
+
+        public void Store(IEnumerable<Message> messages)
+        {
+
         }
 
         // записываем сообщения в файлы

@@ -10,7 +10,7 @@ namespace OnlineSchoolSystem.Models
     public class StatisticPerStream
     {
         public string LiveChatId { get; set; }
-        public IEnumerable<IMember> Members { get; set; }
+        public IEnumerable<Member> Members { get; set; }
         public IEnumerable<IAnswer> Answers { get; set; }
         public IEnumerable<IQuestion> Questions { get; set; }        
 

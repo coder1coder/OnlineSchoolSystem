@@ -1,5 +1,6 @@
 ﻿using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
+using OnlineSchoolSystem.Models;
 using System.IO;
 
 namespace OnlineSchoolSystem.Client
@@ -15,8 +16,16 @@ namespace OnlineSchoolSystem.Client
 
             //create file with default values
             if (!File.Exists(_filePath))
-                File.WriteAllText(_filePath, JsonConvert.SerializeObject(new {
-                    authorizationEndpoint = "https://www.googleapis.com/youtube/v3/"
+                File.WriteAllText(_filePath, JsonConvert.SerializeObject(new
+                {
+                    bots = new
+                    {
+                        youtube = new
+                        {
+                            endpoint = "https://www.googleapis.com/youtube/v3/",
+                            token = ""
+                        }
+                    }
                 }));
 
             var json = File.ReadAllText(_filePath);

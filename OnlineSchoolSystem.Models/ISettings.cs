@@ -1,6 +1,6 @@
-﻿namespace OnlineSchoolSystem.Client
+﻿namespace OnlineSchoolSystem.Models
 {
-    internal interface ISettings
+    public interface ISettings
     {
         string Get(string key);
         void Set(string key, string value);
