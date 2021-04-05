@@ -83,6 +83,16 @@ namespace OnlineSchoolSystem.DataAccess.FileStorage
             }
         }
 
+        public List<Message> GetAllQuestions()
+        {
+            return null;
+        }
+
+        public List<Message> GetAllAnswers()
+        {
+            return null;
+        }
+
         // по идее этот метод надо вынести в какой то сервис
         public List<Message> GetUniqueValues(List<Message> chatMessages)
         {
