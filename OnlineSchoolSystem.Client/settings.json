@@ -3,15 +3,11 @@
 		"youtube": {
 			"endpoints": {
 				"auth": "https://accounts.google.com/o/oauth2/v2/auth",
-				"request": ""
+				"request": "https://www.googleapis.com/youtube/v3/"
 			},
 			"clientId": "",
 			"clientSecret": "",
 			"token": ""
 		}
-	},
-	"storages": {
-		"directoryPath": "Storage"
 	}
-		
 }

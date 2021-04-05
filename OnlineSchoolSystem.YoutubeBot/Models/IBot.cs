@@ -7,7 +7,7 @@ namespace OnlineSchoolSystem.Bots.Models
     {
         BotState State { get; set; }
 
-        Task StartAsync(IStorage storage, ISettings settings);
+        Task StartAsync(IStorage storage);
         void Stop();
     }
 }

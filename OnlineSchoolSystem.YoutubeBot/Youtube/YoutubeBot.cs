@@ -3,6 +3,7 @@ using Newtonsoft.Json.Linq;
 using OnlineSchoolSystem.Bots.Models;
 using OnlineSchoolSystem.Bots.Youtube.Models;
 using OnlineSchoolSystem.Models;
+using OnlineSchoolSystem.Models.Configurations;
 using OnlineSchoolSystem.Utilites;
 using System;
 using System.Collections.Generic;
@@ -21,48 +22,32 @@ namespace OnlineSchoolSystem.Bots
 {
     public class YoutubeBot: IBot
     {
-        private const string _endpoint = "https://www.googleapis.com/youtube/v3/";
-        private HttpClient _client;
-        private ISettings _settings;
+        private readonly YoutubeBotConfig _config;
         private IStorage _storage;
-
-        private string _token = "";
-        private string Token 
-        { 
-            get => _token; 
-            set
-            {
-                _token = value;
-                _settings.Set("token", _token);
-            }
-        }
+        private HttpClient _client;
 
         public BotState State { get; set; }
 
-        public async Task StartAsync(IStorage storage, ISettings settings)
+        public YoutubeBot(YoutubeBotConfig config)
+        {
+            _config = config;
+        }
+
+        public async Task StartAsync(IStorage storage)
         {
             _storage = storage;
-            _settings = settings;
 
-            var clientId = _settings.Get("clientId");
-            var clientSecret = _settings.Get("clientSecret");
-
-            if (string.IsNullOrWhiteSpace(clientId) || string.IsNullOrWhiteSpace(clientSecret))
+            if (string.IsNullOrWhiteSpace(_config.ClientId) || string.IsNullOrWhiteSpace(_config.ClientSecret))
             {
-                Helper.Log("Не найдены ключи доступа, установите их", Helper.LogLevel.Warning);
-                Console.Write("clientId: ");
-                _settings.Set("clientId", Console.ReadLine());
-
-                Console.Write("clientSecret: ");
-                _settings.Set("clientSecret", Console.ReadLine());
+                Helper.Log("Не найдены ключи доступа", Helper.LogLevel.Error);
                 return;
             }
 
-            await DoOAuthAsync(clientId, clientSecret);
+            await DoOAuthAsync(_config.ClientId, _config.ClientSecret);
 
             _client = new HttpClient
             {
-                BaseAddress = new Uri(_endpoint)
+                BaseAddress = new Uri(_config.Endpoints["request"])
             };
 
             _client.DefaultRequestHeaders.Add("referer", "www.example.com:8000/*");
@@ -72,7 +57,7 @@ namespace OnlineSchoolSystem.Bots
             {
                 //Do check _token's expire
 
-                if (string.IsNullOrWhiteSpace(_settings.Get("_token")))
+                if (string.IsNullOrWhiteSpace(_config.Token))
                 {
                     Helper.Log("Некорректный токен", Helper.LogLevel.Error);
                     return;
@@ -80,15 +65,13 @@ namespace OnlineSchoolSystem.Bots
 
                 Helper.Log("Начинаем работу", Helper.LogLevel.Success);
 
-                var bot = new YoutubeBot();
-
-                var broadcasts = bot.GetBroadcasts().ToList();
+                var broadcasts = GetBroadcasts().ToList();
 
                 if (broadcasts.Count > 0)
                 {
-                    var liveChatId = bot.GetLiveChatIdByBroadcastId(broadcasts.First().Id);
+                    var liveChatId = GetLiveChatIdByBroadcastId(broadcasts.First().Id);
 
-                    var youtubeMessages = bot.GetLiveChatMessages(liveChatId).ToList();
+                    var youtubeMessages = GetLiveChatMessages(liveChatId).ToList();
 
                     var messages = youtubeMessages.Select(x => new Message()
                     {
@@ -140,7 +123,7 @@ namespace OnlineSchoolSystem.Bots
             });
 
             if (!_client.DefaultRequestHeaders.Contains("Authorization"))
-                _client.DefaultRequestHeaders.Add("Authorization", string.Format("Bearer {0}", Token));
+                _client.DefaultRequestHeaders.Add("Authorization", string.Format("Bearer {0}", _config.Token));
 
             var parameters = encodedContent.ReadAsStringAsync().Result;
 
@@ -179,7 +162,7 @@ namespace OnlineSchoolSystem.Bots
             });
 
             if (!_client.DefaultRequestHeaders.Contains("Authorization"))
-                _client.DefaultRequestHeaders.Add("Authorization", string.Format("Bearer {0}", Token));
+                _client.DefaultRequestHeaders.Add("Authorization", string.Format("Bearer {0}", _config.Token));
 
             var parameters = encodedContent.ReadAsStringAsync().Result;
 
@@ -213,7 +196,7 @@ namespace OnlineSchoolSystem.Bots
             });
 
             if (!_client.DefaultRequestHeaders.Contains("Authorization"))
-                _client.DefaultRequestHeaders.Add("Authorization", string.Format("Bearer {0}", Token));
+                _client.DefaultRequestHeaders.Add("Authorization", string.Format("Bearer {0}", _config.Token));
 
             var parameters = encodedContent.ReadAsStringAsync().Result;
 
@@ -257,7 +240,7 @@ namespace OnlineSchoolSystem.Bots
             });
 
             if (!_client.DefaultRequestHeaders.Contains("Authorization"))
-                _client.DefaultRequestHeaders.Add("Authorization", string.Format("Bearer {0}", Token));
+                _client.DefaultRequestHeaders.Add("Authorization", string.Format("Bearer {0}", _config.Token));
 
             var parameters = encodedContent.ReadAsStringAsync().Result;
 
@@ -314,7 +297,7 @@ namespace OnlineSchoolSystem.Bots
 
             var scopesString = string.Join(' ', scopes);
 
-            var endpoint = _settings.Get("authorizationEndpoint");
+            var endpoint = _config.Endpoints["auth"];
 
             string authorizationRequest = string.Format("{0}?response_type=code&scope={1}&redirect_uri={2}&client_id={3}&state={4}&code_challenge={5}&code_challenge_method={6}",
                 endpoint,
@@ -412,7 +395,7 @@ namespace OnlineSchoolSystem.Bots
 
                     var _tokenEndpointDecoded = JsonConvert.DeserializeObject<Dictionary<string, string>>(responseText);
 
-                    _token = _tokenEndpointDecoded["access_token"];
+                    _config.Token = _tokenEndpointDecoded["access_token"];
                 }
             }
             catch (WebException ex)

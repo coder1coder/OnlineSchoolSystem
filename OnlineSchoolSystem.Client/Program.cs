@@ -1,45 +1,33 @@
-﻿using Newtonsoft.Json;
-using OnlineSchoolSystem.Bots;
+﻿using OnlineSchoolSystem.Bots;
 using OnlineSchoolSystem.Bots.Models;
-using OnlineSchoolSystem.Bots.Youtube.Models;
 using OnlineSchoolSystem.DataAccess.FileStorage;
 using OnlineSchoolSystem.Models;
 using OnlineSchoolSystem.Utilites;
 using System;
 using System.Collections.Generic;
-using System.Diagnostics;
 using System.IO;
 using System.Linq;
-using System.Net;
-using System.Net.Sockets;
-using System.Runtime.InteropServices;
-using System.Security.Cryptography;
-using System.Text;
-using System.Threading;
-using System.Threading.Tasks;
 
 namespace OnlineSchoolSystem.Client
 {
     class Program
     {
-        private static ISettings _settings;
+        private static ConfigurationManager _config;
         private static List<IBot> _bots;
 
         static void Main(string[] args)
         {
-            _settings = new JsonSettings(Environment.CurrentDirectory + "/settings.json");
+            _config = new ConfigurationManager(Path.Join(Environment.CurrentDirectory,"settings.json"));
+
             _bots = new List<IBot>
             {
-                new YoutubeBot()
+                new YoutubeBot(_config.Application.Bots.Youtube)
             };
 
             var menu = new Menu();
             
             do
             {
-                //Инициализация хранилища
-                if (!Environment.CurrentDirectory.Contains(_settings.Get("storageDirectoryName")))
-                    Directory.CreateDirectory(_settings.Get("storageDirectoryName"));
 
                 menu.PrintMenu();
                 var operation = menu.GetSelectedOperation();
@@ -52,8 +40,7 @@ namespace OnlineSchoolSystem.Client
                             .OfType<YoutubeBot>()
                             .FirstOrDefault()?
                             .StartAsync(
-                                new JsonFileAccess(_settings.Get("storageDirectoryName")),
-                                _settings
+                                new JsonFileAccess(Path.Combine(Environment.CurrentDirectory,"Storage"))
                             );
 
                         break;
