@@ -159,8 +159,8 @@ namespace OnlineSchoolSystem.Client
                 File.Create(filePath);
             }
 
-            var jsonFile = new JsonFileAccess(filePath);
-            jsonFile.AppendMessagesToFile(messages);
+            var jsonFile = new MessageRepository(filePath);
+            jsonFile.AddMessages(messages);
         }
 
         /// <summary>
@@ -201,8 +201,8 @@ namespace OnlineSchoolSystem.Client
             var messages = new List<Message>();
             foreach (var file in files)
             {
-                var fileAccess = new JsonFileAccess(file);
-                messages.AddRange(fileAccess.ReadAllMessagesFromFile());
+                var fileAccess = new MessageRepository(file);
+                messages.AddRange(fileAccess.ReadAllMessages());
             }
             // треубется реализовать получение из списка сообщений только те сообщения, у которых  message type is textMessageEvent.(Linq выражением)
             foreach (var message in messages)

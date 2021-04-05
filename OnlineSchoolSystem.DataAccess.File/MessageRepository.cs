@@ -7,10 +7,10 @@ using OnlineSchoolSystem.Models;
 
 namespace OnlineSchoolSystem.DataAccess.FileStorage
 {
-    public class JsonFileAccess
+    public class MessageRepository : IMessageRepository
     {
         private readonly string _fileName;
-        public JsonFileAccess(string fileName)
+        public MessageRepository(string fileName)
         {
             this._fileName = fileName;
         }
@@ -23,10 +23,10 @@ namespace OnlineSchoolSystem.DataAccess.FileStorage
             File.WriteAllText(_fileName, jsonString);
         }
 
-        // Записать в файл сообщение
-        public void AppendMessageToFile(Message chatMessage)
+        // Записать в файл одно сообщение
+        public void AddMessage(Message chatMessage)
         {
-            var storedChatMessages = ReadAllMessagesFromFile();
+            var storedChatMessages = ReadAllMessages();
             storedChatMessages.Add(chatMessage);
             storedChatMessages = GetUniqueValues(storedChatMessages);
 
@@ -34,9 +34,9 @@ namespace OnlineSchoolSystem.DataAccess.FileStorage
         }
 
         // Записать в файл сообщения
-        public void AppendMessagesToFile(List<Message> chatMessages)
+        public void AddMessages(List<Message> chatMessages)
         {
-            var storedChatMessages = ReadAllMessagesFromFile();
+            var storedChatMessages = ReadAllMessages();
             storedChatMessages.AddRange(chatMessages);
             storedChatMessages = GetUniqueValues(storedChatMessages);
 
@@ -46,7 +46,7 @@ namespace OnlineSchoolSystem.DataAccess.FileStorage
         // Удалить сообщение
         public void DeleteMessage(Message chatMessage)
         {
-            var storedChatMessages = ReadAllMessagesFromFile();
+            var storedChatMessages = ReadAllMessages();
             storedChatMessages.Remove(chatMessage);
             storedChatMessages = GetUniqueValues(storedChatMessages);
 
@@ -56,7 +56,7 @@ namespace OnlineSchoolSystem.DataAccess.FileStorage
         // Удалить сообщения
         public void DeleteMessages(List<Message> chatMessages)
         {
-            var storedChatMessages = ReadAllMessagesFromFile();
+            var storedChatMessages = ReadAllMessages();
             foreach (var item in chatMessages)
             {
                 storedChatMessages.Remove(item);
@@ -67,7 +67,7 @@ namespace OnlineSchoolSystem.DataAccess.FileStorage
         }
 
         // Прочитать из файла
-        public List<Message> ReadAllMessagesFromFile()
+        public List<Message> ReadAllMessages()
         {
             if (File.Exists(_fileName))
             {
@@ -83,6 +83,7 @@ namespace OnlineSchoolSystem.DataAccess.FileStorage
             }
         }
 
+        // по идее этот метод надо вынести в какой то сервис
         public List<Message> GetUniqueValues(List<Message> chatMessages)
         {
             //для сравнения по определённым полям реализовать IEquatable<StubChatMessageEntity> для StubChatMessageEntity
@@ -92,5 +93,5 @@ namespace OnlineSchoolSystem.DataAccess.FileStorage
         }
     }
 
-   
+
 }
