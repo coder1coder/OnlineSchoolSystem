@@ -1,8 +1,9 @@
 ﻿using Newtonsoft.Json;
-using OnlineSchoolSystem.DataAccess.FileStorage;
+using OnlineSchoolSystem.Bots;
+using OnlineSchoolSystem.Bots.Models;
+using OnlineSchoolSystem.Bots.Youtube.Models;
 using OnlineSchoolSystem.Models;
 using OnlineSchoolSystem.Utilites;
-using OnlineSchoolSystem.Bots;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
@@ -15,17 +16,20 @@ using System.Security.Cryptography;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
-using OnlineSchoolSystem.Bots.Youtube.Models;
 
 namespace OnlineSchoolSystem.Client
 {
     class Program
     {
         private static JsonSettings _settings;
+        private static List<IBot> _bots;
 
         static async Task<int> Main(string[] args)
         {
             _settings = new JsonSettings(Environment.CurrentDirectory + "/settings.json");
+            _bots = new List<IBot>();
+
+            _bots.Add(new YoutubeBot());
 
             var menu = new Menu();
             
@@ -41,6 +45,11 @@ namespace OnlineSchoolSystem.Client
                 switch (operation)
                 {
                     case OperationsEnum.CONNECT_TO_STREAM:
+
+                        _bots
+                            .OfType<YoutubeBot>()
+                            .FirstOrDefault()?
+                            .Start(new JsonFileAccess(_settings.Get("storageDirectoryName")));
 
                         var clientId = _settings.Get("clientId");
                         var clientSecret = _settings.Get("clientSecret");
@@ -113,7 +122,7 @@ namespace OnlineSchoolSystem.Client
 
                 Helper.Log("Начинаем работу", Helper.LogLevel.Success);
 
-                var bot = new YoutubeBot(_settings.Get("Token"));
+                var bot = new YoutubeBot();
 
                 var broadcasts = bot.GetBroadcasts().ToList();
 
@@ -175,7 +184,7 @@ namespace OnlineSchoolSystem.Client
             {
                 LiveChatId = idStream,
                 Answers = GetAnswers(idStream),
-                Authors = GetAuthors(idStream),
+                Members = GetMembers(idStream),
                 Questions = GetQuestions(idStream)
             };
         }
@@ -185,7 +194,7 @@ namespace OnlineSchoolSystem.Client
             throw new NotImplementedException();
         }
 
-        private static List<AuthorDetails> GetAuthors(string idStream)
+        private static List<IMember> GetMembers(string idStream)
         {
             throw new NotImplementedException();
         }

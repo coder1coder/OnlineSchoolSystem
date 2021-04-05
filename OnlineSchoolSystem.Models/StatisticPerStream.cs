@@ -1,17 +1,18 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
+﻿using System.Collections.Generic;
 
 namespace OnlineSchoolSystem.Models
-{/// <summary>
-/// модель для методов сбора статистики
-/// </summary>
+{
+    //Статистика должна быть абстрактной относительно сборщиков
+    /// <summary>
+    /// модель для методов сбора статистики
+    /// </summary>
+    /// 
     public class StatisticPerStream
     {
         public string LiveChatId { get; set; }
-        public List<AuthorDetails> Authors { get; set; }
-        public List<IAnswer> Answers { get; set; }
-        public List<IQuestion> Questions { get; set; }        
+        public IEnumerable<IMember> Members { get; set; }
+        public IEnumerable<IAnswer> Answers { get; set; }
+        public IEnumerable<IQuestion> Questions { get; set; }        
 
     }
 }

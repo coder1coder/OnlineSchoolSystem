@@ -1,11 +1,13 @@
 ﻿using Newtonsoft.Json;
 using System.Collections.Generic;
 using System.IO;
+using OnlineSchoolSystem.Models;
 using System.Linq;
+using OnlineSchoolSystem.Bots.Youtube.Models;
 
 namespace OnlineSchoolSystem.DataAccess.FileStorage
 {
-    public class JsonFileAccess
+    public class JsonFileAccess: IStorage
     {
         private readonly string _fileName;
         public JsonFileAccess(string fileName)

@@ -20,10 +20,8 @@ namespace OnlineSchoolSystem.Bots
 
         public BotState State { get; set; }
 
-        public YoutubeBot(string token)
+        public YoutubeBot()
         {
-            Token = token;
-
             _client = new HttpClient
             {
                 BaseAddress = new Uri(_endpoint)

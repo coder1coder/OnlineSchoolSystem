@@ -1,4 +1,5 @@
-﻿using OnlineSchoolSystem.Models;
+﻿using OnlineSchoolSystem.Bots.Youtube.Models;
+using OnlineSchoolSystem.Models;
 using System;
 using System.Collections.Generic;
 using System.Text;
