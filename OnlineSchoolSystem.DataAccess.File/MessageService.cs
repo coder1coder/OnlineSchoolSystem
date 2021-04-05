@@ -69,6 +69,7 @@ namespace OnlineSchoolSystem.DataAccess.FileStorage
             string stringMessage = chatMessage?.Snippet?.TextMessageDetails?.MessageText;
             int QuestionId = StringIsAnswer(stringMessage);
             // TODO: найти сообщение по ответу
+
             return null;
         }
 
