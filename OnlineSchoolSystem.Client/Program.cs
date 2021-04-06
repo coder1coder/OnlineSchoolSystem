@@ -159,7 +159,7 @@ namespace OnlineSchoolSystem.Client
                 File.Create(filePath);
             }
 
-            var jsonFile = new MessageRepository(filePath);
+            var jsonFile = new MessageStore(filePath);
             jsonFile.AddMessages(messages);
         }
 
@@ -201,7 +201,7 @@ namespace OnlineSchoolSystem.Client
             var messages = new List<Message>();
             foreach (var file in files)
             {
-                var fileAccess = new MessageRepository(file);
+                var fileAccess = new MessageStore(file);
                 messages.AddRange(fileAccess.ReadAllMessages());
             }
             // треубется реализовать получение из списка сообщений только те сообщения, у которых  message type is textMessageEvent.(Linq выражением)

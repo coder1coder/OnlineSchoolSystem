@@ -5,7 +5,7 @@ using System.Text;
 
 namespace OnlineSchoolSystem.DataAccess.FileStorage.Models
 {
-    public class MessageStoreModel
+    public class MessageForStore
     {
         public MessageType messageType { get; set; }
         public Message message { get; set; }
