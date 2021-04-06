@@ -13,6 +13,7 @@ using System.Linq;
 using System.Net;
 using System.Net.Http;
 using System.Net.Sockets;
+using System.Reflection;
 using System.Security.Cryptography;
 using System.Text;
 using System.Threading;
@@ -25,16 +26,20 @@ namespace OnlineSchoolSystem.Bots
         private readonly YoutubeBotConfig _config;
         private IStorage _storage;
         private HttpClient _client;
+        private readonly CancellationTokenSource _tokenSource;
 
         public BotState State { get; set; }
 
         public YoutubeBot(YoutubeBotConfig config)
         {
             _config = config;
+            _tokenSource = new CancellationTokenSource();
         }
-
-        public async Task StartAsync(IStorage storage)
+        
+        public async Task Start(IStorage storage)
         {
+            _tokenSource.Token.ThrowIfCancellationRequested();
+
             _storage = storage;
 
             if (string.IsNullOrWhiteSpace(_config.ClientId) || string.IsNullOrWhiteSpace(_config.ClientSecret))
@@ -42,8 +47,6 @@ namespace OnlineSchoolSystem.Bots
                 Helper.Log("Не найдены ключи доступа", Helper.LogLevel.Error);
                 return;
             }
-
-            await DoOAuthAsync(_config.ClientId, _config.ClientSecret);
 
             _client = new HttpClient
             {
@@ -53,8 +56,13 @@ namespace OnlineSchoolSystem.Bots
             _client.DefaultRequestHeaders.Add("referer", "www.example.com:8000/*");
             _client.DefaultRequestHeaders.Add("accept", "applications/json");
 
-            do
+            await DoOAuthAsync(_config.ClientId, _config.ClientSecret);
+
+            while (true)
             {
+                if (_tokenSource.IsCancellationRequested)
+                    return;
+
                 //Do check _token's expire
 
                 if (string.IsNullOrWhiteSpace(_config.Token))
@@ -75,7 +83,8 @@ namespace OnlineSchoolSystem.Bots
 
                     var messages = youtubeMessages.Select(x => new Message()
                     {
-                        Member = new Member() {
+                        Member = new Member()
+                        {
                             Name = x.AuthorDetails.DisplayName
                         },
                         Text = x.Snippet.TextMessageDetails.MessageText
@@ -85,8 +94,8 @@ namespace OnlineSchoolSystem.Bots
 
                     //AddMessagesToFile(broadcasts.First().Id, messages);
 
-                    foreach (var item in youtubeMessages)
-                        Helper.Log(item.ToString(), Helper.LogLevel.Success);
+                    //foreach (var item in youtubeMessages)
+                    //    Helper.Log(item.ToString(), Helper.LogLevel.Success);
 
                     //send message if question registered
                     //if (!bot.SendTextMessage(liveChatId, "messages count: " + messages.Count))
@@ -94,19 +103,15 @@ namespace OnlineSchoolSystem.Bots
                     //    Helper.Log("Отправка сообщения не удалась", Helper.LogLevel.Error);
                     //}
                 }
-                else Helper.Log("Нет существующих трансляций", Helper.LogLevel.Error);
 
-                Helper.Log("Я работу свою сделал. Пойду чай попью 5 сек..");
-                Thread.Sleep(5000);
-
-                Helper.Log("Press any key to continue working and ESC to exit..");
+                Thread.Sleep(_config.Interval);
             }
-            while (Console.ReadKey().Key != ConsoleKey.Escape);
         }
 
         public void Stop()
         {
-            
+            _tokenSource.Cancel();
+            _tokenSource.Dispose();
         }
 
         /// <summary>
@@ -266,18 +271,9 @@ namespace OnlineSchoolSystem.Bots
             return response.IsSuccessStatusCode;
         }
 
-        // ref http://stackoverflow.com/a/3978040
-        public int GetRandomUnusedPort()
-        {
-            var listener = new TcpListener(IPAddress.Loopback, 0);
-            listener.Start();
-            var port = ((IPEndPoint)listener.LocalEndpoint).Port;
-            listener.Stop();
-            return port;
-        }
-
         private async Task DoOAuthAsync(string clientId, string clientSecret)
         {
+            Helper.Log($"{ GetType().Name}: {MethodBase.GetCurrentMethod().Name}");
             string state = GenerateRandomDataBase64url(32);
             string codeVerifier = GenerateRandomDataBase64url(32);
             string codeChallenge = Base64UrlEncodeNoPadding(Sha256Ascii(codeVerifier));
@@ -363,7 +359,7 @@ namespace OnlineSchoolSystem.Bots
         /// <param name="clientId"></param>
         /// <param name="clientSecret"></param>
         /// <returns></returns>
-        async Task ExchangeCodeFor_tokensAsync(string code, string codeVerifier, string redirectUri, string clientId, string clientSecret)
+        private async Task ExchangeCodeFor_tokensAsync(string code, string codeVerifier, string redirectUri, string clientId, string clientSecret)
         {
             var _tokenRequestUri = "https://www.googleapis.com/oauth2/v4/token";
             var _tokenRequestBody = string.Format("code={0}&redirect_uri={1}&client_id={2}&code_verifier={3}&client_secret={4}&scope=&grant_type=authorization_code",
@@ -415,12 +411,22 @@ namespace OnlineSchoolSystem.Bots
             }
         }
 
+        // ref http://stackoverflow.com/a/3978040
+        private static int GetRandomUnusedPort()
+        {
+            var listener = new TcpListener(IPAddress.Loopback, 0);
+            listener.Start();
+            var port = ((IPEndPoint)listener.LocalEndpoint).Port;
+            listener.Stop();
+            return port;
+        }
+
         /// <summary>
         /// Returns URI-safe data with a given input length.
         /// </summary>
         /// <param name="length">Input length (nb. output will be longer)</param>
         /// <returns></returns>
-        private string GenerateRandomDataBase64url(uint length)
+        private static string GenerateRandomDataBase64url(uint length)
         {
             var rng = new RNGCryptoServiceProvider();
             byte[] bytes = new byte[length];
@@ -431,7 +437,7 @@ namespace OnlineSchoolSystem.Bots
         /// <summary>
         /// Returns the SHA256 hash of the input string, which is assumed to be ASCII.
         /// </summary>
-        private byte[] Sha256Ascii(string text)
+        private static byte[] Sha256Ascii(string text)
         {
             byte[] bytes = Encoding.ASCII.GetBytes(text);
             using (SHA256Managed sha256 = new SHA256Managed())
@@ -445,7 +451,7 @@ namespace OnlineSchoolSystem.Bots
         /// </summary>
         /// <param name="buffer"></param>
         /// <returns></returns>
-        private string Base64UrlEncodeNoPadding(byte[] buffer)
+        private static string Base64UrlEncodeNoPadding(byte[] buffer)
         {
             string base64 = Convert.ToBase64String(buffer);
 
