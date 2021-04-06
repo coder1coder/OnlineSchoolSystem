@@ -2,6 +2,6 @@
 {
     public class ApplicationConfig
     {
-        public BotsConfig Bots { get; }
+        public BotsConfig Bots { get; set; }
     }
 }

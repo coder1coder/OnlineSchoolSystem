@@ -2,6 +2,6 @@
 {
     public class BotsConfig
     {
-        public YoutubeBotConfig Youtube { get; }
+        public YoutubeBotConfig Youtube { get; set; }
     }
 }
