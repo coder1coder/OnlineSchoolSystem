@@ -9,7 +9,6 @@ namespace OnlineSchoolSystem.DataAccess.FileStorage
         void AddMessages(List<Message> chatMessages);
         void DeleteMessage(Message chatMessage);
         void DeleteMessages(List<Message> chatMessages);
-        List<Message> GetUniqueValues(List<Message> chatMessages);
         List<Message> ReadAllMessages();
     }
 }

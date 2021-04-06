@@ -4,22 +4,60 @@ using System.IO;
 using Newtonsoft.Json;
 using System.Linq;
 using OnlineSchoolSystem.Models;
+using OnlineSchoolSystem.DataAccess.FileStorage.Models;
 
 namespace OnlineSchoolSystem.DataAccess.FileStorage
 {
     public class MessageRepository : IMessageRepository
     {
         private readonly string _fileName;
+        private readonly MessageService _messageService;
+
         public MessageRepository(string fileName)
         {
             this._fileName = fileName;
+            _messageService = new MessageService();
         }
+
+        // преобразовать в модель для сохранения
+        private List<MessageStoreModel> ConvertMessagesForStore(List<Message> chatMessages)
+        {
+            List<MessageStoreModel> messagesForStore = new List<MessageStoreModel>();
+            foreach (var chatMessage in chatMessages)
+            {
+                messagesForStore.Add(
+                    new MessageStoreModel()
+                    {
+                        message = chatMessage,
+                        messageType = _messageService.GetMessageType(chatMessage)
+                    }
+                );
+            }
+
+            return messagesForStore;
+        }
+
+        // преоразовать из модели для сохранения
+        private List<Message> ConvertToMessage(List<MessageStoreModel> storedMessages)
+        {
+            List<Message> messages = new List<Message>();
+            foreach (var storedMessage in storedMessages)
+            {
+                messages.Add(storedMessage.message);
+            }
+
+            return messages;
+        }
+
 
         // записываем сообщения в файлы
         private void WriteMessagesToFile(List<Message> chatMessages)
         {
-            string jsonString = JsonConvert.SerializeObject(chatMessages, Formatting.Indented);
+            //Только уникальные значения
+            chatMessages = _messageService.GetUniqueValues(chatMessages);
+            var messagesForStore = ConvertMessagesForStore(chatMessages);
 
+            string jsonString = JsonConvert.SerializeObject(messagesForStore, Formatting.Indented);
             File.WriteAllText(_fileName, jsonString);
         }
 
@@ -28,8 +66,6 @@ namespace OnlineSchoolSystem.DataAccess.FileStorage
         {
             var storedChatMessages = ReadAllMessages();
             storedChatMessages.Add(chatMessage);
-            storedChatMessages = GetUniqueValues(storedChatMessages);
-
             WriteMessagesToFile(storedChatMessages);
         }
 
@@ -38,8 +74,6 @@ namespace OnlineSchoolSystem.DataAccess.FileStorage
         {
             var storedChatMessages = ReadAllMessages();
             storedChatMessages.AddRange(chatMessages);
-            storedChatMessages = GetUniqueValues(storedChatMessages);
-
             WriteMessagesToFile(storedChatMessages);
         }
 
@@ -48,8 +82,6 @@ namespace OnlineSchoolSystem.DataAccess.FileStorage
         {
             var storedChatMessages = ReadAllMessages();
             storedChatMessages.Remove(chatMessage);
-            storedChatMessages = GetUniqueValues(storedChatMessages);
-
             WriteMessagesToFile(storedChatMessages);
         }
 
@@ -61,8 +93,6 @@ namespace OnlineSchoolSystem.DataAccess.FileStorage
             {
                 storedChatMessages.Remove(item);
             }
-            storedChatMessages = GetUniqueValues(storedChatMessages);
-
             WriteMessagesToFile(storedChatMessages);
         }
 
@@ -72,7 +102,8 @@ namespace OnlineSchoolSystem.DataAccess.FileStorage
             if (File.Exists(_fileName))
             {
                 string json = File.ReadAllText(_fileName);
-                var chatMessages = JsonConvert.DeserializeObject<List<Message>>(json);
+                var storedChatMessages = JsonConvert.DeserializeObject<List<MessageStoreModel>>(json);
+                var chatMessages = ConvertToMessage(storedChatMessages);
                 if (chatMessages == null)
                     return new List<Message>();
                 return chatMessages;
@@ -85,23 +116,38 @@ namespace OnlineSchoolSystem.DataAccess.FileStorage
 
         public List<Message> GetAllQuestions()
         {
-            return null;
+            if (File.Exists(_fileName))
+            {
+                string json = File.ReadAllText(_fileName);
+                var storedChatMessages = JsonConvert.DeserializeObject<List<MessageStoreModel>>(json);
+                storedChatMessages = storedChatMessages.Where(m => m.messageType == MessageType.Question).ToList();
+                var chatMessages = ConvertToMessage(storedChatMessages);
+                if (chatMessages == null)
+                    return new List<Message>();
+                return chatMessages;
+            }
+            else
+            {
+                return new List<Message>();
+            }
         }
 
         public List<Message> GetAllAnswers()
         {
-            return null;
-        }
-
-        // по идее этот метод надо вынести в какой то сервис
-        public List<Message> GetUniqueValues(List<Message> chatMessages)
-        {
-            //для сравнения по определённым полям реализовать IEquatable<StubChatMessageEntity> для StubChatMessageEntity
-            //https://docs.microsoft.com/ru-ru/dotnet/api/system.linq.enumerable.distinct?view=net-5.0
-            var result = chatMessages.Distinct().ToList();
-            return result;
+            if (File.Exists(_fileName))
+            {
+                string json = File.ReadAllText(_fileName);
+                var storedChatMessages = JsonConvert.DeserializeObject<List<MessageStoreModel>>(json);
+                storedChatMessages = storedChatMessages.Where(m => m.messageType == MessageType.Answer).ToList();
+                var chatMessages = ConvertToMessage(storedChatMessages);
+                if (chatMessages == null)
+                    return new List<Message>();
+                return chatMessages;
+            }
+            else
+            {
+                return new List<Message>();
+            }
         }
     }
-
-
 }

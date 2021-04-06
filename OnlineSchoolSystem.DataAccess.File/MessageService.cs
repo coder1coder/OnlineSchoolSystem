@@ -1,6 +1,8 @@
-﻿using OnlineSchoolSystem.Models;
+﻿using OnlineSchoolSystem.DataAccess.FileStorage.Models;
+using OnlineSchoolSystem.Models;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Text;
 using System.Text.RegularExpressions;
 
@@ -30,25 +32,33 @@ namespace OnlineSchoolSystem.DataAccess.FileStorage
         }
 
         /// <summary>
-        /// Если строка является ответом то получить номер вопроса, если нет, то 0
+        /// Если строка является ответом 
         /// </summary>
         /// <returns></returns>
-        private int StringIsAnswer(string stringMessage)
+        private bool StringIsAnswer(string stringMessage)
         {
             Regex regex = new Regex(ANSWER_PATTERN, RegexOptions.IgnoreCase);
-            if (regex.IsMatch(stringMessage))
-            {
-                string questionNumberString = Regex.Match(stringMessage, @"\d+").Value;
-                int questionNumber = Int32.Parse(questionNumberString);
-
-                return questionNumber;
-            }
-            else
-                return 0;
+            return regex.IsMatch(stringMessage);
         }
 
         /// <summary>
-        /// Проверяем является ли сообщение вопросом и если это так, то вернём true
+        /// Определить тип сообщения Вопрос, Ответ, обычное сообщение
+        /// </summary>
+        /// <param name="chatMessage"></param>
+        /// <returns></returns>
+        public MessageType GetMessageType(Message chatMessage)
+        {
+            if (MessageIsQuestions(chatMessage))
+                return MessageType.Question;
+
+            if (MessageIsAnswer(chatMessage))
+                return MessageType.Answer;
+            
+            return MessageType.Regular;
+        }
+
+        /// <summary>
+        /// Проверяем является ли сообщение вопросом 
         /// </summary>
         /// <param name="chatMessage"></param>
         /// <returns></returns>
@@ -59,23 +69,29 @@ namespace OnlineSchoolSystem.DataAccess.FileStorage
         }
 
         /// <summary>
-        /// Проверяем является ли сообщение ответом на какой либо вопрос, 
+        /// Проверяем является ли сообщение ответом
         /// если это так, то вернём вопрос
         /// </summary>
         /// <param name="chatMessage"></param>
         /// <returns></returns>
-        public Message MessageIsAnswer(Message chatMessage)
+        public bool MessageIsAnswer(Message chatMessage)
         {
             string stringMessage = chatMessage?.Snippet?.TextMessageDetails?.MessageText;
-            int QuestionId = StringIsAnswer(stringMessage);
-            // TODO: найти сообщение по ответу
-
-            return null;
+            return StringIsAnswer(stringMessage);
         }
 
         public bool IsMessageRegistered()
         {
             return false;
+        }
+
+        // по идее этот метод надо вынести в какой то сервис
+        public List<Message> GetUniqueValues(List<Message> chatMessages)
+        {
+            //для сравнения по определённым полям реализовать IEquatable<StubChatMessageEntity> для StubChatMessageEntity
+            //https://docs.microsoft.com/ru-ru/dotnet/api/system.linq.enumerable.distinct?view=net-5.0
+            var result = chatMessages.Distinct().ToList();
+            return result;
         }
     }
 }
