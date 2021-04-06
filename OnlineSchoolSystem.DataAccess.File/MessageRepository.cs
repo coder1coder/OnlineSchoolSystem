@@ -4,15 +4,19 @@ using System.IO;
 using Newtonsoft.Json;
 using System.Linq;
 using OnlineSchoolSystem.Models;
+using OnlineSchoolSystem.DataAccess.FileStorage.Models;
 
 namespace OnlineSchoolSystem.DataAccess.FileStorage
 {
     public class MessageRepository : IMessageRepository
     {
         private readonly string _fileName;
+        private readonly MessageService _messageService;
+             
         public MessageRepository(string fileName)
         {
             this._fileName = fileName;
+            _messageService = new MessageService();
         }
 
         // записываем сообщения в файлы
@@ -100,6 +104,17 @@ namespace OnlineSchoolSystem.DataAccess.FileStorage
             //https://docs.microsoft.com/ru-ru/dotnet/api/system.linq.enumerable.distinct?view=net-5.0
             var result = chatMessages.Distinct().ToList();
             return result;
+        }
+
+        public List<MessageStoreModel> GetMessagesType(List<Message> messages)
+        {
+            List<MessageStoreModel> result = new List<MessageStoreModel>();
+            foreach (var message in messages)
+            {
+                
+                _messageService.
+            }
+
         }
     }
 
