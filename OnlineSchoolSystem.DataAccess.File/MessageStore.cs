@@ -8,25 +8,25 @@ using OnlineSchoolSystem.DataAccess.FileStorage.Models;
 
 namespace OnlineSchoolSystem.DataAccess.FileStorage
 {
-    public class MessageRepository : IMessageRepository
+    public class MessageStore : IMessageStore
     {
         private readonly string _fileName;
         private readonly MessageService _messageService;
 
-        public MessageRepository(string fileName)
+        public MessageStore(string fileName)
         {
             this._fileName = fileName;
             _messageService = new MessageService();
         }
 
         // преобразовать в модель для сохранения
-        private List<MessageStoreModel> ConvertMessagesForStore(List<Message> chatMessages)
+        private List<MessageForStore> ConvertMessagesForStore(List<Message> chatMessages)
         {
-            List<MessageStoreModel> messagesForStore = new List<MessageStoreModel>();
+            List<MessageForStore> messagesForStore = new List<MessageForStore>();
             foreach (var chatMessage in chatMessages)
             {
                 messagesForStore.Add(
-                    new MessageStoreModel()
+                    new MessageForStore()
                     {
                         message = chatMessage,
                         messageType = _messageService.GetMessageType(chatMessage)
@@ -37,8 +37,8 @@ namespace OnlineSchoolSystem.DataAccess.FileStorage
             return messagesForStore;
         }
 
-        // преоразовать из модели для сохранения
-        private List<Message> ConvertToMessage(List<MessageStoreModel> storedMessages)
+        // преоразовать из модели для сохранения в сообщения
+        private List<Message> ConvertToMessageFromStore(List<MessageForStore> storedMessages)
         {
             List<Message> messages = new List<Message>();
             foreach (var storedMessage in storedMessages)
@@ -48,7 +48,6 @@ namespace OnlineSchoolSystem.DataAccess.FileStorage
 
             return messages;
         }
-
 
         // записываем сообщения в файлы
         private void WriteMessagesToFile(List<Message> chatMessages)
@@ -102,8 +101,8 @@ namespace OnlineSchoolSystem.DataAccess.FileStorage
             if (File.Exists(_fileName))
             {
                 string json = File.ReadAllText(_fileName);
-                var storedChatMessages = JsonConvert.DeserializeObject<List<MessageStoreModel>>(json);
-                var chatMessages = ConvertToMessage(storedChatMessages);
+                var storedChatMessages = JsonConvert.DeserializeObject<List<MessageForStore>>(json);
+                var chatMessages = ConvertToMessageFromStore(storedChatMessages);
                 if (chatMessages == null)
                     return new List<Message>();
                 return chatMessages;
@@ -119,9 +118,9 @@ namespace OnlineSchoolSystem.DataAccess.FileStorage
             if (File.Exists(_fileName))
             {
                 string json = File.ReadAllText(_fileName);
-                var storedChatMessages = JsonConvert.DeserializeObject<List<MessageStoreModel>>(json);
+                var storedChatMessages = JsonConvert.DeserializeObject<List<MessageForStore>>(json);
                 storedChatMessages = storedChatMessages.Where(m => m.messageType == MessageType.Question).ToList();
-                var chatMessages = ConvertToMessage(storedChatMessages);
+                var chatMessages = ConvertToMessageFromStore(storedChatMessages);
                 if (chatMessages == null)
                     return new List<Message>();
                 return chatMessages;
@@ -137,9 +136,9 @@ namespace OnlineSchoolSystem.DataAccess.FileStorage
             if (File.Exists(_fileName))
             {
                 string json = File.ReadAllText(_fileName);
-                var storedChatMessages = JsonConvert.DeserializeObject<List<MessageStoreModel>>(json);
+                var storedChatMessages = JsonConvert.DeserializeObject<List<MessageForStore>>(json);
                 storedChatMessages = storedChatMessages.Where(m => m.messageType == MessageType.Answer).ToList();
-                var chatMessages = ConvertToMessage(storedChatMessages);
+                var chatMessages = ConvertToMessageFromStore(storedChatMessages);
                 if (chatMessages == null)
                     return new List<Message>();
                 return chatMessages;

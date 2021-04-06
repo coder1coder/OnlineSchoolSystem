@@ -3,7 +3,7 @@ using System.Collections.Generic;
 
 namespace OnlineSchoolSystem.DataAccess.FileStorage
 {
-    public interface IMessageRepository
+    public interface IMessageStore
     {
         void AddMessage(Message chatMessage);
         void AddMessages(List<Message> chatMessages);
