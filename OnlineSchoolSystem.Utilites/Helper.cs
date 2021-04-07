@@ -1,6 +1,8 @@
 ﻿using System;
+using System.IO;
 using System.Net;
 using System.Net.Sockets;
+using System.Runtime.CompilerServices;
 using System.Security.Cryptography;
 using System.Text;
 
@@ -53,6 +55,12 @@ namespace OnlineSchoolSystem.Utilites
             return base64;
         }
 
+        public static void PressAnyKeyToContinue()
+        {
+            Print("Нажмите любую клавишу для продолжения");
+            Console.ReadKey();
+        }
+
         // ref http://stackoverflow.com/a/3978040
         public static int GetRandomUnusedPort()
         {
@@ -68,30 +76,38 @@ namespace OnlineSchoolSystem.Utilites
         /// </summary>
         /// <param name="message">Сообщение</param>
         /// <param name="level">Уровень сообщения</param>
-        public static void Log(string message, LogLevel level = LogLevel.Default)
+        public static void Log(string message, 
+            LogLevel level = LogLevel.Default,
+            [CallerFilePath] string callerFilePath = "",
+            [CallerMemberName] string caller = "", 
+            string pattern = "{2} {1}: {0}")
         {
+            var callerTypeName = Path.GetFileNameWithoutExtension(callerFilePath);
+            var output = string.Format(pattern, message, caller, callerTypeName);
+
             switch (level)
             {
                 case LogLevel.Success:
-                    Console.ForegroundColor = ConsoleColor.Green;
+                    Print(output, ConsoleColor.Green);
                     break;
                 case LogLevel.Info:
-                    Console.ForegroundColor = ConsoleColor.Cyan;
+                    Print(output, ConsoleColor.Cyan);
                     break;
                 case LogLevel.Warning:
-                    Console.ForegroundColor = ConsoleColor.Yellow;
+                    Print(output, ConsoleColor.Yellow);
                     break;
                 case LogLevel.Error:
-                    Console.ForegroundColor = ConsoleColor.Red;
-                    break;
-                case LogLevel.Default:
-                    Console.ForegroundColor = ConsoleColor.Gray;
+                    Print(output, ConsoleColor.Red);
                     break;
                 default:
-                    Console.ForegroundColor = ConsoleColor.Gray;
+                    Print(output);
                     break;
             }
+        }
 
+        public static void Print(string message, ConsoleColor color = ConsoleColor.Gray)
+        {
+            Console.ForegroundColor = color;
             Console.WriteLine(message);
         }
     }

@@ -21,14 +21,14 @@ namespace OnlineSchoolSystem.Client
 
             _bots = new List<IBot>
             {
-                new YoutubeBot(_config.Application.Bots.Youtube)
+                new YoutubeBot(_config.Application.Bots.Youtube,
+                                new JsonFileAccess(Path.Combine(Environment.CurrentDirectory,"Storage")))
             };
 
             var menu = new Menu();
             
             do
             {
-
                 menu.PrintMenu();
                 var operation = menu.GetSelectedOperation();
 
@@ -36,13 +36,19 @@ namespace OnlineSchoolSystem.Client
                 {
                     case OperationsEnum.CONNECT_TO_STREAM:
 
-                        _bots
-                            .OfType<YoutubeBot>()
-                            .FirstOrDefault()?
-                            .StartAsync(
-                                new JsonFileAccess(Path.Combine(Environment.CurrentDirectory,"Storage"))
-                            );
+                        var youtubeBots = _bots.OfType<YoutubeBot>();
 
+                        if (youtubeBots.Any())
+                        {
+                            var started = youtubeBots.FirstOrDefault().Start();
+
+                            if (!started)
+                                Helper.Log($"Невозможно запустить бота. Бот уже работает, либо имеет некорректные настройки.", 
+                                    Helper.LogLevel.Error);
+                        }
+                        else Helper.Log($"Нет ботов для запуска", Helper.LogLevel.Error);
+
+                        Helper.PressAnyKeyToContinue();
                         break;
 
                     case OperationsEnum.GET_MESSAGES_FROM_PREVIOUS_STREAMS:
@@ -60,8 +66,7 @@ namespace OnlineSchoolSystem.Client
                     case OperationsEnum.EXIT:
                         {
                             menu.IsContinue = false;
-                            Helper.Log("Нажмите любую клавишу для выхода");
-                            Console.ReadKey();
+                            Helper.PressAnyKeyToContinue();
                             break;
                         }
                     default:

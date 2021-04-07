@@ -1,13 +1,13 @@
-﻿using OnlineSchoolSystem.Models;
-using System.Threading.Tasks;
+﻿using System.Threading.Tasks;
 
 namespace OnlineSchoolSystem.Bots.Models
 {
     public interface IBot
     {
-        BotState State { get; set; }
+        TaskStatus Status { get; }
 
-        Task StartAsync(IStorage storage);
+        bool CanStart();
+        bool Start();
         void Stop();
     }
 }

@@ -13,7 +13,6 @@ using System.Linq;
 using System.Net;
 using System.Net.Http;
 using System.Net.Sockets;
-using System.Reflection;
 using System.Security.Cryptography;
 using System.Text;
 using System.Threading;
@@ -24,30 +23,52 @@ namespace OnlineSchoolSystem.Bots
     public class YoutubeBot: IBot
     {
         private readonly YoutubeBotConfig _config;
-        private IStorage _storage;
-        private HttpClient _client;
         private readonly CancellationTokenSource _tokenSource;
+        private readonly Task _task;
+        private readonly IStorage _storage;
+        private HttpClient _client;
 
-        public BotState State { get; set; }
+        public TaskStatus Status => _task.Status;
 
-        public YoutubeBot(YoutubeBotConfig config)
+        public YoutubeBot(YoutubeBotConfig config, IStorage storage)
         {
             _config = config;
-            _tokenSource = new CancellationTokenSource();
-        }
-        
-        public async Task Start(IStorage storage)
-        {
-            _tokenSource.Token.ThrowIfCancellationRequested();
-
             _storage = storage;
+            _tokenSource = new CancellationTokenSource();
 
-            if (string.IsNullOrWhiteSpace(_config.ClientId) || string.IsNullOrWhiteSpace(_config.ClientSecret))
+            _task = new Task(() => DoWork(), _tokenSource.Token);
+        }
+
+        public bool CanStart()
+        {
+            return
+                string.IsNullOrWhiteSpace(_config.ClientId) == false
+                &&
+                string.IsNullOrWhiteSpace(_config.ClientSecret) == false
+                &&
+                (_task.Status == TaskStatus.Canceled || _task.Status == TaskStatus.Created);
+        }
+
+        public bool Start()
+        {
+            if (CanStart())
             {
-                Helper.Log("Не найдены ключи доступа", Helper.LogLevel.Error);
-                return;
+                DoOAuthAsync(_config.ClientId, _config.ClientSecret)
+                        .Wait();
+
+                if (string.IsNullOrWhiteSpace(_config.Token) == false)
+                {
+                    _task.Start();
+                    return true;
+                }
             }
 
+            return false;
+        }
+
+        private void DoWork()
+        {
+            Helper.Log("Погодотвка к работе"); 
             _client = new HttpClient
             {
                 BaseAddress = new Uri(_config.Endpoints["request"])
@@ -56,22 +77,18 @@ namespace OnlineSchoolSystem.Bots
             _client.DefaultRequestHeaders.Add("referer", "www.example.com:8000/*");
             _client.DefaultRequestHeaders.Add("accept", "applications/json");
 
-            await DoOAuthAsync(_config.ClientId, _config.ClientSecret);
-
-            while (true)
+            while (_tokenSource.IsCancellationRequested == false)
             {
-                if (_tokenSource.IsCancellationRequested)
-                    return;
+                Helper.Log("Работаю..");
 
                 //Do check _token's expire
 
                 if (string.IsNullOrWhiteSpace(_config.Token))
                 {
                     Helper.Log("Некорректный токен", Helper.LogLevel.Error);
+                    _tokenSource.Cancel();
                     return;
                 }
-
-                Helper.Log("Начинаем работу", Helper.LogLevel.Success);
 
                 var broadcasts = GetBroadcasts().ToList();
 
@@ -104,6 +121,7 @@ namespace OnlineSchoolSystem.Bots
                     //}
                 }
 
+                Helper.Log($"Ожидаю {_config.Interval}ms");
                 Thread.Sleep(_config.Interval);
             }
         }
@@ -111,7 +129,7 @@ namespace OnlineSchoolSystem.Bots
         public void Stop()
         {
             _tokenSource.Cancel();
-            _tokenSource.Dispose();
+            //_tokenSource.Dispose();
         }
 
         /// <summary>
@@ -213,19 +231,22 @@ namespace OnlineSchoolSystem.Bots
 
                 var jObj = JObject.Parse(result);
 
-                if (jObj.ContainsKey("items") && jObj["items"].Type == JTokenType.Array && jObj["items"].HasValues)
+                if (jObj.ContainsKey("items") && jObj["items"].Type == JTokenType.Array)
                 {
-                    foreach (var item in jObj["items"].Children())
-                        yield return new Broadcast()
-                        {
-                            Id = item.Value<string>("id"),
-                            Title = item["snippet"].Value<string>("title"),
-                            LiveChatId = item["snippet"].Value<string>("liveChatId"),
-                        };
+                    if (jObj["items"].HasValues)
+                    {
+                        foreach (var item in jObj["items"].Children())
+                            yield return new Broadcast()
+                            {
+                                Id = item.Value<string>("id"),
+                                Title = item["snippet"].Value<string>("title"),
+                                LiveChatId = item["snippet"].Value<string>("liveChatId"),
+                            };
+                    }                        
                 }
-                else throw new Exception("Bad response");
+                else Helper.Log("Некорректный ответ от сервера", Helper.LogLevel.Error);
             }
-            else throw new Exception(response.ReasonPhrase);
+            else Helper.Log("Некорректный ответ от сервера", Helper.LogLevel.Error);
         }
 
         /// <summary>
@@ -273,13 +294,20 @@ namespace OnlineSchoolSystem.Bots
 
         private async Task DoOAuthAsync(string clientId, string clientSecret)
         {
-            Helper.Log($"{ GetType().Name}: {MethodBase.GetCurrentMethod().Name}");
-            string state = GenerateRandomDataBase64url(32);
-            string codeVerifier = GenerateRandomDataBase64url(32);
-            string codeChallenge = Base64UrlEncodeNoPadding(Sha256Ascii(codeVerifier));
+            Helper.Log($"Попытка авторизации");
+
+            if (string.IsNullOrWhiteSpace(clientId) || string.IsNullOrWhiteSpace(clientSecret))
+            {
+                Helper.Log($"Неверные значение ClientId и ClientSecret", Helper.LogLevel.Error);
+                return;
+            }
+
+            var state = GenerateRandomDataBase64url(32);
+            var codeVerifier = GenerateRandomDataBase64url(32);
+            var codeChallenge = Base64UrlEncodeNoPadding(Sha256Ascii(codeVerifier));
             const string codeChallengeMethod = "S256";
 
-            string redirectUri = $"http://{IPAddress.Loopback}:{GetRandomUnusedPort()}/";
+            var redirectUri = $"http://{IPAddress.Loopback}:{GetRandomUnusedPort()}/";
 
             var http = new HttpListener();
             http.Prefixes.Add(redirectUri);
@@ -295,7 +323,7 @@ namespace OnlineSchoolSystem.Bots
 
             var endpoint = _config.Endpoints["auth"];
 
-            string authorizationRequest = string.Format("{0}?response_type=code&scope={1}&redirect_uri={2}&client_id={3}&state={4}&code_challenge={5}&code_challenge_method={6}",
+            var authorizationRequest = string.Format("{0}?response_type=code&scope={1}&redirect_uri={2}&client_id={3}&state={4}&code_challenge={5}&code_challenge_method={6}",
                 endpoint,
                 scopesString,
                 Uri.EscapeDataString(redirectUri),
@@ -310,11 +338,10 @@ namespace OnlineSchoolSystem.Bots
                 FileName = targetURL,
                 UseShellExecute = true
             };
+
             Process.Start(psi);
 
             var context = await http.GetContextAsync();
-
-            //BringConsoleToFront();
 
             var response = context.Response;
             string responseString = "<html><head><meta http-equiv='refresh' content='10;url=https://google.com'></head><body>Please return to the app.</body></html>";
@@ -326,6 +353,7 @@ namespace OnlineSchoolSystem.Bots
             http.Stop();
 
             string error = context.Request.QueryString.Get("error");
+
             if (error is object)
             {
                 Helper.Log($"Ошибка авторизации OAuth: {error}.", Helper.LogLevel.Error);
@@ -387,7 +415,6 @@ namespace OnlineSchoolSystem.Bots
                 using (var reader = new StreamReader(_tokenResponse.GetResponseStream()))
                 {
                     var responseText = await reader.ReadToEndAsync();
-                    //Console.WriteLine(responseText);
 
                     var _tokenEndpointDecoded = JsonConvert.DeserializeObject<Dictionary<string, string>>(responseText);
 
