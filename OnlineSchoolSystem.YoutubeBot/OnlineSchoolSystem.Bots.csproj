@@ -10,6 +10,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\OnlineSchoolSystem.Models\OnlineSchoolSystem.Models.csproj" />
+    <ProjectReference Include="..\OnlineSchoolSystem.Utilites\OnlineSchoolSystem.Utilites.csproj" />
   </ItemGroup>
 
 </Project>

@@ -13,11 +13,11 @@ namespace OnlineSchoolSystem.Client
         public void PrintMenu()
         {
             Console.Clear();
-            Helper.Log("Добро пожаловать в приложение!");
-            Helper.Log("1) Подключиться к стриму");
-            Helper.Log("2) Посмотреть лог сообщений с предыдущих стримов");
-            Helper.Log("3) Сформировать статистику");
-            Helper.Log("0) Выход");
+            Helper.Print("Добро пожаловать в приложение!");
+            Helper.Print("1) Подключиться к стриму");
+            Helper.Print("2) Посмотреть лог сообщений с предыдущих стримов");
+            Helper.Print("3) Сформировать статистику");
+            Helper.Print("0) Выход");
         }
 
         /// <summary>
@@ -27,6 +27,7 @@ namespace OnlineSchoolSystem.Client
         public OperationsEnum GetSelectedOperation()
         {
             int operation;
+
             do
             {
                 Console.Write("Введите номер операции, которую хотите совершить: ");
@@ -60,21 +61,6 @@ namespace OnlineSchoolSystem.Client
         //}
 
         /// <summary>
-        /// Получение имени файла по идентификатору стрима
-        /// </summary>
-        /// <param name="idStream"></param>
-        /// <returns></returns>
-        private string GetFileName(string idStream)
-        {
-            throw new NotImplementedException();
-        }
-
-        private string GetCurrentFile()
-        {
-            throw new NotImplementedException();
-        }
-
-        /// <summary>
         /// Получает от пользователя ответ на вопрос question
         /// </summary>
         /// <param name="question"></param>
@@ -84,7 +70,7 @@ namespace OnlineSchoolSystem.Client
             string answer = null;
             while (answer == null)
             {
-                Helper.Log(question);
+                Helper.Print(question);
                 answer = Console.ReadLine();
             }
             return answer;

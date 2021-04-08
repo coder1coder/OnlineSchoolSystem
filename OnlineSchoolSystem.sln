@@ -11,7 +11,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "OnlineSchoolSystem.Client",
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "OnlineSchoolSystem.Utilites", "OnlineSchoolSystem.Utilites\OnlineSchoolSystem.Utilites.csproj", "{6EFA6B20-B90B-4D82-AD6F-A94C5468998D}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "OnlineSchoolSystem.YoutubeBot", "OnlineSchoolSystem.YoutubeBot\OnlineSchoolSystem.YoutubeBot.csproj", "{B0069111-D045-4F57-B9F9-86D43432C0C3}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "OnlineSchoolSystem.Bots", "OnlineSchoolSystem.YoutubeBot\OnlineSchoolSystem.Bots.csproj", "{B0069111-D045-4F57-B9F9-86D43432C0C3}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

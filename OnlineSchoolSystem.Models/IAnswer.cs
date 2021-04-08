@@ -1,12 +1,8 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-
-namespace OnlineSchoolSystem.Models
+﻿namespace OnlineSchoolSystem.Models
 {
     public interface IAnswer
     {
         public string QuestionId { get; }
-        public Message Message { get; set; }
+        public string Message { get; set; }
     }
 }

@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-
-namespace OnlineSchoolSystem.Models
+﻿namespace OnlineSchoolSystem.Bots.Youtube.Models
 {
     /// <summary>
     /// Модель деталей сообщения

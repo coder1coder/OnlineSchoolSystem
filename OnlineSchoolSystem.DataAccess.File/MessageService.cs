@@ -1,7 +1,5 @@
 ﻿using OnlineSchoolSystem.Models;
 using System;
-using System.Collections.Generic;
-using System.Text;
 using System.Text.RegularExpressions;
 
 namespace OnlineSchoolSystem.DataAccess.FileStorage
@@ -54,8 +52,8 @@ namespace OnlineSchoolSystem.DataAccess.FileStorage
         /// <returns></returns>
         public bool MessageIsQuestions(Message chatMessage)
         {
-            string stringMessage = chatMessage?.Snippet?.TextMessageDetails?.MessageText;
-            return StringIsQuestion(stringMessage);
+            //string stringMessage = chatMessage?.Snippet?.TextMessageDetails?.MessageText;
+            return StringIsQuestion(chatMessage.Text);
         }
 
         /// <summary>
@@ -66,8 +64,8 @@ namespace OnlineSchoolSystem.DataAccess.FileStorage
         /// <returns></returns>
         public Message MessageIsAnswer(Message chatMessage)
         {
-            string stringMessage = chatMessage?.Snippet?.TextMessageDetails?.MessageText;
-            int QuestionId = StringIsAnswer(stringMessage);
+            //string stringMessage = chatMessage?.Snippet?.TextMessageDetails?.MessageText;
+            int QuestionId = StringIsAnswer(chatMessage.Text);
             // TODO: найти сообщение по ответу
             return null;
         }

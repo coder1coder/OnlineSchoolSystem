@@ -1,18 +1,22 @@
-﻿using System;
+﻿using Newtonsoft.Json;
 using System.Collections.Generic;
 using System.IO;
-using Newtonsoft.Json;
-using System.Linq;
 using OnlineSchoolSystem.Models;
+using System.Linq;
 
 namespace OnlineSchoolSystem.DataAccess.FileStorage
 {
-    public class JsonFileAccess
+    public class JsonFileAccess: IStorage
     {
         private readonly string _fileName;
         public JsonFileAccess(string fileName)
         {
             this._fileName = fileName;
+        }
+
+        public void Store(IEnumerable<Message> messages)
+        {
+
         }
 
         // записываем сообщения в файлы
