@@ -5,6 +5,7 @@ namespace OnlineSchoolSystem.Client
 {
     public class Menu
     {
+
         public bool IsContinue { get; set; } = true;
 
         /// <summary>
