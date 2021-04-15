@@ -15,6 +15,10 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "OnlineSchoolSystem.Bots", "
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "OnlineSchoolSystem.Web", "OnlineSchoolSystem.Web\OnlineSchoolSystem.Web.csproj", "{513E424E-6A92-4B90-BA24-BD95D3AED65A}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "OnlineSchoolSystem.DataAccess.EFCore", "OnlineSchoolSystem.DataAccess.EFCore\OnlineSchoolSystem.DataAccess.EFCore.csproj", "{3E2F750C-F210-4576-B8DA-0B921B9E7A19}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "OnlineSchoolSystem.Domain", "OnlineSchoolSystem.Domain\OnlineSchoolSystem.Domain.csproj", "{8D3BAB4E-1EF3-4F94-ACCD-8F4EC60E3845}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -45,6 +49,14 @@ Global
 		{513E424E-6A92-4B90-BA24-BD95D3AED65A}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{513E424E-6A92-4B90-BA24-BD95D3AED65A}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{513E424E-6A92-4B90-BA24-BD95D3AED65A}.Release|Any CPU.Build.0 = Release|Any CPU
+		{3E2F750C-F210-4576-B8DA-0B921B9E7A19}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{3E2F750C-F210-4576-B8DA-0B921B9E7A19}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{3E2F750C-F210-4576-B8DA-0B921B9E7A19}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{3E2F750C-F210-4576-B8DA-0B921B9E7A19}.Release|Any CPU.Build.0 = Release|Any CPU
+		{8D3BAB4E-1EF3-4F94-ACCD-8F4EC60E3845}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{8D3BAB4E-1EF3-4F94-ACCD-8F4EC60E3845}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{8D3BAB4E-1EF3-4F94-ACCD-8F4EC60E3845}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{8D3BAB4E-1EF3-4F94-ACCD-8F4EC60E3845}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
