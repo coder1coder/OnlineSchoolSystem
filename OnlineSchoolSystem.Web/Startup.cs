@@ -23,8 +23,10 @@ namespace OnlineSchoolSystem.Web
         public void ConfigureServices(IServiceCollection services)
         {
             services.AddDbContext<ApplicationContext>(options =>
-                options.UseSqlServer(Configuration.GetConnectionString("DefaultConnection"))
-            );
+                options.UseSqlServer(
+                    Configuration.GetConnectionString("DefaultConnection")
+                    ,o => o.MigrationsAssembly("OnlineSchoolSystem.DataAccess.EFCore")
+            ));
 
             services.AddScoped<ILessonRepository, LessonRepository>();
 
