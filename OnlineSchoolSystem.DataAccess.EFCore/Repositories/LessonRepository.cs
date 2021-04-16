@@ -7,6 +7,7 @@ namespace OnlineSchoolSystem.DataAccess.EFCore.Repositories
     {
         public LessonRepository(ApplicationContext context):base(context)
         {
+
         }
     }
 }

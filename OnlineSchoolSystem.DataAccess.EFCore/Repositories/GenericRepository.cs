@@ -9,6 +9,7 @@ namespace OnlineSchoolSystem.DataAccess.EFCore.Repositories
     public class GenericRepository<T> : IGenericRepository<T> where T : class
     {
         private readonly ApplicationContext _context;
+
         public GenericRepository(ApplicationContext context)
         {
             _context = context;

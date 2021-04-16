@@ -1,32 +1,27 @@
 ﻿using Microsoft.AspNetCore.Mvc;
-using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
+using OnlineSchoolSystem.Domain.Interfaces;
 using OnlineSchoolSystem.Web.Models;
-using System;
-using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
-using System.Threading.Tasks;
 
 namespace OnlineSchoolSystem.Web.Controllers
 {
-    public class HomeController : Controller
+    public class LessonController : Controller
     {
-        private readonly ILogger<HomeController> _logger;
+        private readonly ILogger<LessonController> _logger;
+        private readonly ILessonRepository _repository;
 
-        public HomeController(ILogger<HomeController> logger)
+        public LessonController(ILogger<LessonController> logger, ILessonRepository repository)
         {
             _logger = logger;
+            _repository = repository;
         }
 
         public IActionResult Index()
         {
-            return View();
-        }
-
-        public IActionResult Privacy()
-        {
-            return View();
+            var model = _repository.GetAll().ToList();
+            return View(model);
         }
 
         [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]

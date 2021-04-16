@@ -1,6 +1,8 @@
-﻿namespace OnlineSchoolSystem.Domain.Interfaces
+﻿using OnlineSchoolSystem.Domain.Models;
+
+namespace OnlineSchoolSystem.Domain.Interfaces
 {
-    public interface ILessonRepository
+    public interface ILessonRepository: IGenericRepository<Lesson>
     {
     }
 }
