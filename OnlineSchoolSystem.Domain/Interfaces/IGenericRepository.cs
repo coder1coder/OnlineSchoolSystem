@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq.Expressions;
+using System.Threading.Tasks;
 
 namespace OnlineSchoolSystem.Domain.Interfaces
 {
@@ -13,5 +14,6 @@ namespace OnlineSchoolSystem.Domain.Interfaces
         void AddRange(IEnumerable<T> entities);
         void Remove(T entity);
         void RemoveRange(IEnumerable<T> entities);
+        Task<int> SaveChangesAsync();
     }
 }
